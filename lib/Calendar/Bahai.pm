@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.02';
+$Calendar::Bahai::VERSION = '0.03';
 
 use strict; use warnings;
 
@@ -10,7 +10,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 

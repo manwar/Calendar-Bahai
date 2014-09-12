@@ -18,7 +18,6 @@ WriteMakefile(
         'Test::More' => 0,
     },
     PREREQ_PM     => {
-        'Readonly'        => 0,
         'Time::localtime' => 1.02,
         'List::Util'      => 1.21,
         'Date::Calc'      => 5.7,
