@@ -1,13 +1,31 @@
 Revision history for Calendar-Bahai
 
-0.03  Fri Sep 12 20:06:10 2014
-      - Removed dependency on Readonly.pm from Makefile.PL file.
-
-0.02  Fri Sep 12 18:25:17 2014
+0.08  Fri Sep 12 20:06:10 2014
       - Deleted Build.PL file.
       - Removed dependency of Readonly.pm and Carp.pm.
       - Added section "REPOSITORY" to the pod
       - Added key "META_MERGE" to Makefile.PL
+
+0.07  Tue Aug 09 16:16:11 2011
+      - Made Readonly v1.03 as minimum requirement.
+      - Prepared the distribution using the Module::Signature v0.68.
+
+0.06  Tue Apr 19 09:17:23 2011
+      - Renamed title "SYNOPSIS" to "DESCRIPTION".
+
+0.05  Mon Apr 18 16:42:10 2011
+      - More cosmetics changes.
+
+0.04  Mon Apr 18 15:47:00 2011
+      - Cosmetics changes.
+
+0.03  Tue Apr 12 12:29:29 2011
+      - Fixed the internal method _validate_date().
+      - Added unit test 01-test-case.t
+
+0.02  Fri Apr 08 15:59:10 2011
+      - Updated pod for SYNOPSIS.
+      - Updated some of the sample code in the pod.
 
 0.01  Fri Mar 25 15:31:00 2011
       - First version, released.

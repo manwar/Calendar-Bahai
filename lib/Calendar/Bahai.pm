@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.03';
+$Calendar::Bahai::VERSION = '0.08';
 
 use strict; use warnings;
 
@@ -10,7 +10,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.08
 
 =cut
 
@@ -436,10 +436,10 @@ sub _validate_date {
 
     die("ERROR: Invalid year [$yyyy].\n")
         unless (defined($yyyy) && ($yyyy =~ /^\d+$/) && ($yyyy > 0));
-    die("ERROR: Invalid month number [$mm].\n")
-        unless (defined($mm) && ($mm =~ /^\d{1,2}$/) && ($mm >= 1 || $mm <= 19));
-    die("ERROR: Invalid day number [$dd].\n")
-        unless (defined($dd) && ($dd =~ /^\d{1,2}$/) && ($dd >= 1 || $dd <= 19));
+    die("ERROR: Invalid month [$mm].\n")
+        unless (defined($mm) && ($mm =~ /^\d{1,2}$/) && ($mm >= 1) && ($mm <= 19));
+    die("ERROR: Invalid day [$dd].\n")
+        unless (defined($dd) && ($dd =~ /^\d{1,2}$/) && ($dd >= 1) && ($dd <= 19));
 }
 
 =head1 AUTHOR
