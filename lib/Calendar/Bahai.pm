@@ -1,5 +1,7 @@
 package Calendar::Bahai;
 
+$Calendar::Bahai::VERSION = '0.02';
+
 use strict; use warnings;
 
 =head1 NAME
@@ -8,65 +10,49 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
-
-use Carp;
-use Readonly;
 use Data::Dumper;
 use POSIX qw/floor/;
 use Time::localtime;
 use List::Util qw/min/;
 use Date::Calc qw/Delta_Days Day_of_Week Add_Delta_Days/;
 
-Readonly my $BAHAI_EPOCH     => 2394646.5;
-Readonly my $GREGORIAN_EPOCH => 1721425.5;
+my $BAHAI_EPOCH     = 2394646.5;
+my $GREGORIAN_EPOCH = 1721425.5;
 
-Readonly my $MONTHS =>
-[
+my $MONTHS = [
     '',
     'Baha',    'Jalal', 'Jamal',  'Azamat', 'Nur',       'Rahmat',
     'Kalimat', 'Kamal', 'Asma',   'Izzat',  'Mashiyyat', 'Ilm',
     'Qudrat',  'Qawl',  'Masail', 'Sharaf', 'Sultan',    'Mulk',
-    'Ala'
-];
+    'Ala' ];
 
-Readonly my $CYCLES =>
-[
+my $CYCLES = [
     '',
     'Alif', 'Ba',     'Ab',    'Dal',  'Bab',    'Vav',
     'Abad', 'Jad',    'Baha',  'Hubb', 'Bahhaj', 'Javab',
     'Ahad', 'Vahhab', 'Vidad', 'Badi', 'Bahi',   'Abha',
-    'Vahid'
-];
+    'Vahid' ];
 
-Readonly my $DAYS =>
-[
+my $DAYS = [
     'Jamal',    'Kamal',    'Fidal', 'Idal',
-    'Istijlal', 'Istiqlal', 'Jalal'
-];
+    'Istijlal', 'Istiqlal', 'Jalal' ];
 
-sub new
-{
-    my $class = shift;
-    my $yyyy  = shift;
-    my $mm    = shift;
-    my $dd    = shift;
+sub new {
+    my ($class, $yyyy, $mm, $dd) = @_;
 
     my ($major, $cycle);
     my $self = {};
     bless $self, $class;
 
-    if (defined($yyyy) && defined($mm) && defined($dd))
-    {
+    if (defined($yyyy) && defined($mm) && defined($dd)) {
         _validate_date($yyyy, $mm, $dd);
         ($major, $cycle, $yyyy) = _get_major_cycle_year($yyyy-1);
     }
-    else
-    {
+    else {
         my $today = localtime;
         $yyyy = ($today->year+1900) unless defined $yyyy;
         $mm   = ($today->mon+1) unless defined $mm;
@@ -85,10 +71,12 @@ sub new
 
 =head1 SYNOPSIS
 
-The Bahai calendar started from the original Badi calendar, created by the Bab. The Bahai calendar is composed of 19 months, each with 
-19 days. Years in the Bahai calendar are counted from Thursday, 21 March 1844, the beginning of the Bahai Era or Badi Era (abbreviated 
-BE or B.E.). Year 1 BE thus began at sundown 20 March 1844. Using the Bahai names for the weekday and month,  day one of the Bahai Era 
-was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
+The  Bahai  calendar started from the original Badi calendar, created by the Bab.
+The  Bahai  calendar  is  composed  of 19 months, each with 19 days. Years in the
+Bahai  calendar  are  counted  from Thursday, 21 March 1844, the beginning of the
+Bahai  Era  or Badi Era (abbreviated BE or B.E.). Year 1 BE thus began at sundown
+20  March  1844.  Using the Bahai names for the weekday and month, day one of the
+Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
 
 =head2 Bahai Calendar for the month of Baha year 168 BE.
 
@@ -133,13 +121,16 @@ was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     Idal            Justice                 Wednesday
     Istijlal        Majesty                 Thursday
     Istiqlal        Independence            Friday
-    
-=head2     Kull-i-Shay and Vahid
 
-Also existing in the Bahai calendar system is a 19-year cycle called Vahid and a 361-year (19x19) supercycle called Kull-i-Shay 
-(literally, "All Things").  Each of the 19 years in a Vahid has been given a name as shown in the table below. The 9th Vahid of 
-the 1st Kull-i-Shay  started  on 21 March 1996,  and the 10th Vahid will begin in 2015. The current Bahai year, year 168 BE (21 
-March 2011 - 20 March 2012), is year Badi of the 9th Vahid of the 1st Kull-i-Shay. The 2nd Kull-i-Shay will begin in 2205.
+=head2 Kull-i-Shay and Vahid
+
+Also  existing in the Bahai calendar system is a 19-year cycle called Vahid and a
+361-year (19x19) supercycle called Kull-i-Shay (literally, "All Things"). Each of
+the 19 years in a Vahid has been given a name as shown in the table below.The 9th
+Vahid of the 1st Kull-i-Shay  started  on 21 March 1996,  and the 10th Vahid will
+begin in 2015. The current Bahai year,year 168 BE (21 March 2011 - 20 March 2012)
+,  is year Badi of the 9th Vahid of the 1st Kull-i-Shay. The 2nd Kull-i-Shay will
+begin in 2205.
 
 =head2 1st Kull-i-Shay
 
@@ -178,16 +169,17 @@ Return Bahai date in human readable format.
 
 =cut
 
-sub as_string
-{
-    my $self = shift;
+sub as_string {
+    my ($self) = @_;
+
     my $yyyy = $self->{major} * (19 * ($self->{cycle} - 1) + $self->{yyyy});
     return sprintf("%02d, %s %d BE", $self->{dd}, $MONTHS->[$self->{mm}], $yyyy);
 }
 
 =head2 today()
 
-Return today's date in Bahai calendar as list in the format major,cycle,yyyy,mm,dd.
+Return today's date in Bahai  calendar  as list in the format major, cycle, yyyy,
+mm and dd.
 
     use strict; use warnings;
     use Calendar::Bahai;
@@ -198,9 +190,9 @@ Return today's date in Bahai calendar as list in the format major,cycle,yyyy,mm,
 
 =cut
 
-sub today
-{
-    my $self  = shift;
+sub today {
+    my ($self) = @_;
+
     my $today = localtime;
     return $self->from_gregorian($today->year+1900, $today->mon+1, $today->mday);
 }
@@ -217,12 +209,8 @@ Get day of the week of the given Bahai date, starting with sunday (0).
 
 =cut
 
-sub dow
-{
-    my $self = shift;
-    my $yyyy = shift;
-    my $mm   = shift;
-    my $dd   = shift;
+sub dow {
+    my ($self, $yyyy, $mm, $dd) = @_;
 
     $yyyy = $self->{yyyy} unless defined $yyyy;
     $mm   = $self->{mm}   unless defined $mm;
@@ -238,8 +226,8 @@ sub dow
 
 =head2 get_calendar(yyyy, mm)
 
-Return calendar for given year and month in Bahai calendar. It return current month of Bahai
-calendar if no argument is passed in.
+Return calendar for given year and month in Bahai calendar.It return current month
+of Bahai calendar if no argument is passed in.
 
     use strict; use warnings;
     use Calendar::Bahai;
@@ -252,35 +240,30 @@ calendar if no argument is passed in.
 
 =cut
 
-sub get_calendar
-{
-    my $self = shift;
-    my $yyyy = shift;
-    my $mm   = shift;
+sub get_calendar {
+    my ($self, $yyyy, $mm) = @_;
 
     my ($major, $cycle, $year);
     my ($calendar, $start_index, $days);
-    
-    if (defined($yyyy) && defined($mm))
-    {
+
+    if (defined($yyyy) && defined($mm)) {
         _validate_date($yyyy, $mm, 1);
         $calendar = sprintf("\n\t%s [%d BE]\n", $MONTHS->[$mm], $yyyy);
     }
-    else
-    {
+    else {
         $yyyy = $self->{major} * (19 * ($self->{cycle} - 1) + $self->{yyyy});
         $calendar = sprintf("\n\t%s [%d BE]\n", $MONTHS->[$self->{mm}], $yyyy);
         $mm   = $self->{mm};
     }
-    
+
     $calendar .= "\nSun  Mon  Tue  Wed  Thu  Fri  Sat\n";
     $start_index = $self->dow($yyyy, $mm, 1);
     map { $calendar .= "     " } (1..($start_index%=7));
-    foreach (1 .. 19)
-    {
+    foreach (1 .. 19) {
         $calendar .= sprintf("%3d  ", $_);
         $calendar .= "\n" unless (($start_index+$_)%7);
     }
+
     return sprintf("%s\n\n", $calendar);
 }
 
@@ -290,18 +273,14 @@ Convert Gregorian date to Bahai date.
 
     use strict; use warnings;
     use Calendar::Bahai;
-    
+
     my $calendar = Calendar::Bahai->new();
     my ($major, $cycle, $yyyy, $mm, $dd) = $calendar->from_gregorian(2011, 3, 25);
 
 =cut
 
-sub from_gregorian
-{
-    my $self = shift;
-    my $yyyy = shift;
-    my $mm   = shift;
-    my $dd   = shift;
+sub from_gregorian {
+    my ($self, $yyyy, $mm, $dd) = @_;
 
     return $self->from_julian(_gregorian_to_julian($yyyy, $mm, $dd));
 }
@@ -312,21 +291,15 @@ Convert Bahai date to Gregorian date.
 
     use strict; use warnings;
     use Calendar::Bahai;
-    
+
     my $calendar = Calendar::Bahai->new();
     my ($yyyy, $mm, $dd) = $calendar->to_gregorian();
 
 =cut
 
-sub to_gregorian
-{
-    my $self  = shift;
-    my $major = shift;
-    my $cycle = shift;
-    my $yyyy  = shift;
-    my $mm    = shift;
-    my $dd    = shift;
-    
+sub to_gregorian {
+    my ($self, $major, $cycle, $yyyy, $mm, $dd) = @_;
+
     $major = $self->{major} unless defined $major;
     $cycle = $self->{cycle} unless defined $cycle;
     $yyyy  = $self->{yyyy}  unless defined $yyyy;
@@ -342,16 +315,14 @@ Convert Julian date to Bahai date.
 
     use strict; use warnings;
     use Calendar::Bahai;
-    
+
     my $calendar = Calendar::Bahai->new();
     my ($major, $cycle, $yyyy, $mm, $dd) = $calendar->from_julian(2400124.5);
 
 =cut
 
-sub from_julian
-{
-    my $self   = shift;
-    my $julian = shift;
+sub from_julian {
+    my ($self, $julian) = @_;
 
     my ($major, $cycle, $yyyy, $mm, $dd);
     my ($gy, $bstarty, $j1, $j2, $bys, $bld);
@@ -364,7 +335,7 @@ sub from_julian
 
     $bys = $gy - ($bstarty + ((($j1 <= $julian) && ($julian <= $j2)) ? 1 : 0));
     ($major, $cycle, $yyyy) = _get_major_cycle_year($bys);
-    
+
     $dd    = $julian - $self->to_julian($major, $cycle, $yyyy, 1, 1);
     $bld   = $self->to_julian($major, $cycle, $yyyy, 20, 1);
     $mm    = ($julian >= $bld) ? 20 : (floor($dd / 19) + 1);
@@ -379,27 +350,21 @@ Convert Bahai date to Julian date.
 
     use strict; use warnings;
     use Calendar::Bahai;
-    
+
     my $calendar = Calendar::Bahai->new();
     my $julian   = $calendar->to_julian();
 
 =cut
 
-sub to_julian
-{
-    my $self  = shift;
-    my $major = shift;
-    my $cycle = shift;
-    my $yyyy  = shift;
-    my $mm    = shift;
-    my $dd    = shift;
+sub to_julian {
+    my ($self, $major, $julian, $cycle, $yyyy, $mm, $dd) = @_;
 
     $major = $self->{major} unless defined $major;
     $cycle = $self->{cycle} unless defined $cycle;
     $yyyy  = $self->{yyyy}  unless defined $yyyy;
     $mm    = $self->{mm}    unless defined $mm;
     $dd    = $self->{dd}    unless defined $dd;
-    
+
     my ($y) = _julian_to_gregorian($BAHAI_EPOCH);
     my $gy  = (361 * ($major - 1)) + (19 * ($cycle - 1)) + ($yyyy - 1) + $y;
 
@@ -412,11 +377,8 @@ sub to_julian
            $dd;
 }
 
-sub _gregorian_to_julian
-{
-    my $yyyy = shift;
-    my $mm   = shift;
-    my $dd   = shift;
+sub _gregorian_to_julian {
+    my ($yyyy, $mm, $dd) = @_;
 
     return ($GREGORIAN_EPOCH - 1) +
            (365 * ($yyyy - 1)) +
@@ -428,9 +390,8 @@ sub _gregorian_to_julian
            $dd);
 }
 
-sub _julian_to_gregorian
-{
-    my $julian = shift;
+sub _julian_to_gregorian {
+    my ($julian) = @_;
 
     my $wjd        = floor($julian - 0.5) + 0.5;
     my $depoch     = $wjd - $GREGORIAN_EPOCH;
@@ -453,36 +414,31 @@ sub _julian_to_gregorian
     return ($year, $month, $day);
 }
 
-sub _get_major_cycle_year
-{
-    my $bys = shift;
-    
+sub _get_major_cycle_year {
+    my ($bys) = @_;
+
     my $major = floor($bys / 361) + 1;
     my $cycle = floor(($bys % 361) / 19) + 1;
     my $yyyy  = ($bys % 19) + 1;
-    
+
     return ($major, $cycle, $yyyy);
 }
 
-sub _is_gregorian_leap
-{
-    my $yyyy = shift;
+sub _is_gregorian_leap {
+    my ($yyyy) = @_;
 
     return (($yyyy % 4) == 0) &&
             (!((($yyyy % 100) == 0) && (($yyyy % 400) != 0)));
 }
 
-sub _validate_date
-{
-    my $yyyy = shift;
-    my $mm   = shift;
-    my $dd   = shift;
+sub _validate_date {
+    my ($yyyy, $mm, $dd) = @_;
 
-    croak("ERROR: Invalid year [$yyyy].\n")
+    die("ERROR: Invalid year [$yyyy].\n")
         unless (defined($yyyy) && ($yyyy =~ /^\d+$/) && ($yyyy > 0));
-    croak("ERROR: Invalid month number [$mm].\n")
+    die("ERROR: Invalid month number [$mm].\n")
         unless (defined($mm) && ($mm =~ /^\d{1,2}$/) && ($mm >= 1 || $mm <= 19));
-    croak("ERROR: Invalid day number [$dd].\n")
+    die("ERROR: Invalid day number [$dd].\n")
         unless (defined($dd) && ($dd =~ /^\d{1,2}$/) && ($dd >= 1 || $dd <= 19));
 }
 
@@ -490,11 +446,16 @@ sub _validate_date
 
 Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
+=head1 REPOSITORY
+
+L<https://github.com/Manwar/Calendar-Bahai>
+
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-calendar-bahai at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Calendar-Bahai>.  I will
-be notified, and then you'll automatically be notified of progress on your bug as I make changes.
+Please report any bugs / feature requests to C<bug-calendar-bahai at rt.cpan.org>,
+or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Calendar-Bahai>.
+I will be notified, and then you'll automatically be notified of progress on your
+bug as I make changes.
 
 =head1 SUPPORT
 
@@ -526,17 +487,41 @@ L<http://search.cpan.org/dist/Calendar-Bahai/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2011 Mohammad S Anwar.
+Copyright 2011 - 2014 Mohammad S Anwar.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This  program  is  free software; you can redistribute it and/or modify it under
+the  terms  of the the Artistic License (2.0). You may obtain a copy of the full
+license at:
 
-See http://dev.perl.org/licenses/ for more information.
+L<http://www.perlfoundation.org/artistic_license_2_0>
 
-=head1 DISCLAIMER
+Any  use,  modification, and distribution of the Standard or Modified Versions is
+governed by this Artistic License.By using, modifying or distributing the Package,
+you accept this license. Do not use, modify, or distribute the Package, if you do
+not accept this license.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+If your Modified Version has been derived from a Modified Version made by someone
+other than you,you are nevertheless required to ensure that your Modified Version
+ complies with the requirements of this license.
+
+This  license  does  not grant you the right to use any trademark,  service mark,
+tradename, or logo of the Copyright Holder.
+
+This license includes the non-exclusive, worldwide, free-of-charge patent license
+to make,  have made, use,  offer to sell, sell, import and otherwise transfer the
+Package with respect to any patent claims licensable by the Copyright Holder that
+are  necessarily  infringed  by  the  Package. If you institute patent litigation
+(including  a  cross-claim  or  counterclaim) against any party alleging that the
+Package constitutes direct or contributory patent infringement,then this Artistic
+License to you shall terminate on the date that such litigation is filed.
+
+Disclaimer  of  Warranty:  THE  PACKAGE  IS  PROVIDED BY THE COPYRIGHT HOLDER AND
+CONTRIBUTORS  "AS IS'  AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES. THE IMPLIED
+WARRANTIES    OF   MERCHANTABILITY,   FITNESS   FOR   A   PARTICULAR  PURPOSE, OR
+NON-INFRINGEMENT ARE DISCLAIMED TO THE EXTENT PERMITTED BY YOUR LOCAL LAW. UNLESS
+REQUIRED BY LAW, NO COPYRIGHT HOLDER OR CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL,  OR CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE
+OF THE PACKAGE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
