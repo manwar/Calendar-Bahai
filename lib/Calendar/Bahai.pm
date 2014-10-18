@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.08';
+$Calendar::Bahai::VERSION = '0.09';
 
 use strict; use warnings;
 
@@ -10,10 +10,11 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.08
+Version 0.09
 
 =cut
 
+use 5.006;
 use Data::Dumper;
 use POSIX qw/floor/;
 use Time::localtime;
@@ -68,6 +69,17 @@ sub new {
 
     return $self;
 }
+
+=head1 NOTICE
+
+On July 10, 2014, the  Universal  House  of  Justice  announced  three  decisions
+regarding the Badi` (Bahai) calendar,  which  will affect the dates of Feasts and
+Holy Days. Naw Ruz will usually fall on March 20th,which means that all the Feast
+days will be one day earlier,and the births of the Bab and of Baha'u'llah will be
+celebrated on two consecutive days in the Autumn.The changes take effect from the
+next Bahai New Year, from sunset on March 20, 2015. The definitive tables showing
+the new dates have not yet been released (as of September 24, 2014), but there is
+a preliminary discussion L<here|http://senmcglinn.wordpress.com/2014/09/22/changes-in-bahai-calendar-what-how-why>.
 
 =head1 SYNOPSIS
 
