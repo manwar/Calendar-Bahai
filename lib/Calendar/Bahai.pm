@@ -1,8 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.09';
-
-use strict; use warnings;
+$Calendar::Bahai::VERSION = '0.10';
 
 =head1 NAME
 
@@ -10,10 +8,11 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =cut
 
+use strict; use warnings;
 use 5.006;
 use Data::Dumper;
 use POSIX qw/floor/;
@@ -499,7 +498,7 @@ L<http://search.cpan.org/dist/Calendar-Bahai/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2011 - 2014 Mohammad S Anwar.
+Copyright (C) 2011 - 2015 Mohammad S Anwar.
 
 This  program  is  free software; you can redistribute it and/or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a copy of the full

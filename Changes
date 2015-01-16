@@ -1,5 +1,10 @@
 Revision history for Calendar-Bahai
 
+0.10  Fri Jan 16 15:05:00 2015
+      - Removed SIGNATURE file.
+      - Updated MANIFEST.SKIP file to ignore folder 'eumm/'.
+      - Updated Copyright year information.
+
 0.09  Sat Oct 18 09:00:00 2014
       - Patched RT: 99109.
 

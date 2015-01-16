@@ -1,7 +1,6 @@
 Changes
 MANIFEST
 MANIFEST.SKIP
-SIGNATURE
 Makefile.PL
 README
 lib/Calendar/Bahai.pm
@@ -9,4 +8,3 @@ t/00-load.t
 t/01-test-case.t
 t/manifest.t
 t/pod.t
-
