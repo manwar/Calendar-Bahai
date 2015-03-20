@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.10';
+$Calendar::Bahai::VERSION = '0.11';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
@@ -208,7 +208,7 @@ sub today {
     return $self->from_gregorian($today->year+1900, $today->mon+1, $today->mday);
 }
 
-=head2 dow(yyyy, mm, dd)
+=head2 dow($yyyy, $mm, $dd)
 
 Get day of the week of the given Bahai date, starting with sunday (0).
 
@@ -235,7 +235,7 @@ sub dow {
     return Day_of_Week(@gregorian);
 }
 
-=head2 get_calendar(yyyy, mm)
+=head2 get_calendar($yyyy, $mm)
 
 Return calendar for given year and month in Bahai calendar.It return current month
 of Bahai calendar if no argument is passed in.
@@ -278,7 +278,7 @@ sub get_calendar {
     return sprintf("%s\n\n", $calendar);
 }
 
-=head2 from_gregorian(yyyy, mm, dd)
+=head2 from_gregorian($yyyy, $mm, $dd)
 
 Convert Gregorian date to Bahai date.
 
@@ -320,7 +320,7 @@ sub to_gregorian {
     return _julian_to_gregorian($self->to_julian($major, $cycle, $yyyy, $mm, $dd));
 }
 
-=head2 from_julian()
+=head2 from_julian($julian_date)
 
 Convert Julian date to Bahai date.
 
@@ -355,7 +355,7 @@ sub from_julian {
     return ($major, $cycle, $yyyy, $mm, $dd);
 }
 
-=head2 to_julian(major, cycle, yyyy, mm, dd)
+=head2 to_julian($major, $cycle, $yyyy, $mm, $dd)
 
 Convert Bahai date to Julian date.
 
@@ -387,6 +387,10 @@ sub to_julian {
            +
            $dd;
 }
+
+#
+#
+# PRIVATE METHODS
 
 sub _gregorian_to_julian {
     my ($yyyy, $mm, $dd) = @_;
@@ -500,8 +504,8 @@ L<http://search.cpan.org/dist/Calendar-Bahai/>
 
 Copyright (C) 2011 - 2015 Mohammad S Anwar.
 
-This  program  is  free software; you can redistribute it and/or modify it under
-the  terms  of the the Artistic License (2.0). You may obtain a copy of the full
+This program  is  free software; you can redistribute it and / or modify it under
+the  terms  of the the Artistic License (2.0). You may obtain a  copy of the full
 license at:
 
 L<http://www.perlfoundation.org/artistic_license_2_0>

@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 use 5.006;
 use strict;
 use warnings FATAL => 'all';
@@ -14,16 +16,16 @@ WriteMakefile(
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
-    BUILD_REQUIRES => {
+    BUILD_REQUIRES   => {
         'Test::More' => 0,
     },
-    PREREQ_PM     => {
+    PREREQ_PM => {
         'Time::localtime' => 1.02,
         'List::Util'      => 1.21,
         'Date::Calc'      => 5.7,
     },
-    dist          => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean         => { FILES => 'Calendar-Bahai-*' },
+    dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean => { FILES => 'Calendar-Bahai-*' },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
         resources => {
