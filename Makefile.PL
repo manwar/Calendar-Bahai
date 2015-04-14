@@ -23,6 +23,7 @@ WriteMakefile(
         'Time::localtime' => 1.02,
         'List::Util'      => 1.21,
         'Date::Calc'      => 5.7,
+        'Astro::Utils'    => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Calendar-Bahai-*' },

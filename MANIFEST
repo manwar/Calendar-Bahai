@@ -5,6 +5,8 @@ MANIFEST.SKIP
 Makefile.PL
 README
 lib/Calendar/Bahai.pm
+lib/Calendar/Bahai/Date.pm
+lib/Calendar/Bahai/Utils.pm
 t/00-load.t
 t/01-test-case.t
 t/manifest.t
