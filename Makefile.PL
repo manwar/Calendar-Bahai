@@ -20,8 +20,10 @@ WriteMakefile(
         'Test::More' => 0,
     },
     PREREQ_PM => {
-        'Time::localtime' => 1.02,
-        'Astro::Utils'    => 0,
+        'Moo'              => 0,
+        'namespace::clean' => 0,
+        'Time::localtime'  => 1.02,
+        'Astro::Utils'     => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Calendar-Bahai-*' },
