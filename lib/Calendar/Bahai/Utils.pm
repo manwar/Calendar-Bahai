@@ -10,6 +10,8 @@ Calendar::Bahai::Utils - Helper package for Calendar::Bahai.
 
 Version 0.12
 
+=head1 DESCRIPTION
+
 =cut
 
 use strict; use warnings;
@@ -68,6 +70,12 @@ our $BAHAI_YEAR  = sub { validate_year(@_)  };
 our $BAHAI_MONTH = sub { validate_month(@_) };
 our $BAHAI_DAY   = sub { validate_day(@_)   };
 
+=head1 METHODS
+
+=head2 validate_year($year)
+
+=cut
+
 sub validate_year {
     my ($year) = @_;
 
@@ -75,12 +83,20 @@ sub validate_year {
         unless (defined($year) && ($year =~ /^\d+$/) && ($year > 0));
 }
 
+=head2 validate_month($month)
+
+=cut
+
 sub validate_month {
     my ($month) = @_;
 
-    die("ERROR: Invalid month [$month].\n")
-        unless (defined($month) && ($month =~ /^\d{1,2}$/) && ($month >= 1) && ($month <= 19));
+    #die("ERROR: Invalid month [$month].\n")
+    #    unless (defined($month) && ($month =~ /^\d{1,2}$/) && ($month >= 1) && ($month <= 19));
 }
+
+=head2 validate_day($day)
+
+=cut
 
 sub validate_day {
     my ($day) = @_;
@@ -88,6 +104,10 @@ sub validate_day {
     die ("ERROR: Invalid day [$day].\n")
         unless (defined($day) && ($day =~ /^\d{1,2}$/) && ($day >= 1) && ($day <= 19));
 }
+
+=head2 jwday($julian_date)
+
+=cut
 
 sub jwday {
     my ($julian_date) = @_;
@@ -100,16 +120,30 @@ sub day_of_week {
 
     _validate_bahai_date($year, $month, $day);
 
-    #my $date   = Calendar::Bahai::Date->new({ year => $year, month => $month, day => $day });
-    #my $julian = $date->to_julian;
-    return jwday(_to_julian($major, $cycle, $year, $month, $day));
+    my $date = Calendar::Bahai::Date->new({
+        major => $major,
+        cycle => $cycle,
+        year  => $year,
+        month => $month,
+        day   => $day
+    });
+
+    return $date->day_of_week;
 }
+
+=head2 gregorian_to_bahai($year, $month, $day)
+
+=cut
 
 sub gregorian_to_bahai {
     my ($year, $month, $day) = @_;
 
     return julian_to_bahai(gregorian_to_julian($year, $month, $day));
 }
+
+=head2 julian_to_bahai($julian_date)
+
+=cut
 
 sub julian_to_bahai {
     my ($julian) = @_;
@@ -131,14 +165,17 @@ sub julian_to_bahai {
     $month = ($julian >= $bld) ? 20 : (floor($days / 19) + 1);
     $day   = ($julian + 1) - _to_julian($major, $cycle, $year, $month, 1);
 
-    return ($major, $cycle, $year, $month, $day);
-    #return Calendar::Bahai::Date->new({
-    #    major => $major,
-    #    cycle => $cycle,
-    #    year  => $year,
-    #    month => $month,
-    #    day   => $day });
+    return Calendar::Bahai::Date->new({
+        major => $major,
+        cycle => $cycle,
+        year  => $year,
+        month => $month,
+        day   => $day });
 }
+
+=head2 gregorian_to_julian()
+
+=cut
 
 sub gregorian_to_julian {
     my ($year, $month, $day) = @_;
@@ -152,6 +189,10 @@ sub gregorian_to_julian {
            (($month <= 2) ? 0 : (is_gregorian_leap_year($year) ? -1 : -2)) +
            $day);
 }
+
+=head2 julian_to_gregorian()
+
+=cut
 
 sub julian_to_gregorian {
     my ($julian) = @_;
@@ -177,6 +218,10 @@ sub julian_to_gregorian {
     return ($year, $month, $day);
 }
 
+=head2 get_major_cycle_year($bahai_year)
+
+=cut
+
 sub get_major_cycle_year {
     my ($bys) = @_;
 
@@ -186,6 +231,10 @@ sub get_major_cycle_year {
 
     return ($major, $cycle, $year);
 }
+
+=head2 is_gregorian_leap_year($year)
+
+=cut
 
 sub is_gregorian_leap_year {
     my ($year) = @_;
@@ -201,28 +250,14 @@ sub is_gregorian_leap_year {
 sub _to_julian {
     my ($major, $cycle, $year, $month, $day) = @_;
 
+    my $date = Calendar::Bahai::Date->new({
+        major => $major,
+        cycle => $cycle,
+        year  => $year,
+        month => $month,
+        day   => $day });
 
-    my ($x) = julian_to_gregorian($BAHAI_EPOCH);
-    my $gy     = (361 * ($major - 1)) +
-        (19  * ($cycle - 1)) +
-        ($year - 1) + $x;
-
-    return gregorian_to_julian($gy, 3, 20)
-        +
-        (19 * ($month - 1))
-        +
-        (($month != 20) ? 0 : (is_gregorian_leap_year($gy + 1) ? -14 : -15))
-        +
-        $day;
-
-    #my $date = Calendar::Bahai::Date->new({
-    #    major => $major,
-    #    cycle => $cycle,
-    #    year  => $year,
-    #    month => $month,
-    #    day   => $day });
-
-    #return $date->to_julian;
+    return $date->to_julian;
 }
 
 sub _validate_bahai_date {

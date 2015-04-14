@@ -43,14 +43,10 @@ sub BUILD {
         my $today = localtime;
         my $year  = $today->year + 1900;
         my $month = $today->mon + 1;
-        #my $date  = gregorian_to_bahai($year, $month, 1);
-        #$year = ($date->major * (19 * ($date->cycle - 1))) + $date->year;
-        #$self->year($date->year);
-        #$self->month($date->month);
-        my($major, $cycle, $y, $m, $d) = gregorian_to_bahai($year, $month, 1);
-        $year = ($major * (19 * ($cycle - 1))) + $y;
+        my $date  = gregorian_to_bahai($year, $month, 1);
+        $year = ($date->major * (19 * ($date->cycle - 1))) + $date->year;
         $self->year($year);
-        $self->month($m);
+        $self->month($date->month);
     }
 }
 
@@ -165,7 +161,7 @@ begin in 2205.
 
 =head2 as_string()
 
-Return Bahai date in human readable format.
+Returns current month of the Bahai calendar.
 
     use strict; use warnings;
     use Calendar::Bahai;
@@ -177,19 +173,7 @@ Return Bahai date in human readable format.
 sub as_string {
     my ($self) = @_;
 
-    my $calendar = sprintf("\n\t%s [%d BE]\n",
-                           $BAHAI_MONTH_NAMES->[$self->month], $self->year);
-    $calendar .= "\nSun  Mon  Tue  Wed  Thu  Fri  Sat\n";
-
-    my ($major, $cycle, $year) = get_major_cycle_year($self->year - 1);
-    my $start_index = day_of_week($major, $cycle, $year, $self->month, 1);
-    map { $calendar .= "     " } (1..($start_index %= 7));
-    foreach (1 .. 19) {
-        $calendar .= sprintf("%3d  ", $_);
-        $calendar .= "\n" unless (($start_index + $_) % 7);
-    }
-
-    return sprintf("%s\n\n", $calendar);
+    return _calendar($self->year, $self->month);
 }
 
 =head2 current()
@@ -207,10 +191,8 @@ sub current {
     my ($self) = @_;
 
     my $today = localtime;
-    #return $self->from_gregorian($today->year+1900, $today->mon+1, $today->mday);
-    my ($major, $cycle, $y, $m, $d) = julian_to_bahai(gregorian_to_julian($today->year+1900, $today->mon+1, $today->mday));
-    my $year = ($major * (19 * ($cycle - 1))) + $y;
-    return _calendar($year, $m);
+    my $date  = julian_to_bahai(gregorian_to_julian($today->year+1900, $today->mon+1, $today->mday));
+    return _calendar($date->get_year, $date->month);
 }
 
 =head2 from_gregorian($year, $month, $day)
@@ -227,10 +209,8 @@ Returns bahai month calendar of the given gregorian month and year.
 sub from_gregorian {
     my ($self, $year, $month, $day) = @_;
 
-    #return julian_to_bahai(gregorian_to_julian($year, $month, $day));
-    my ($major, $cycle, $y, $m, $d) = julian_to_bahai(gregorian_to_julian($year, $month, $day));
-    $year = ($major * (19 * ($cycle - 1))) + $y;
-    return _calendar($year, $m);
+    my $date = julian_to_bahai(gregorian_to_julian($year, $month, $day));
+    return _calendar($date->get_year, $date->month);
 }
 
 =head2 from_julian($julian_date)
@@ -247,10 +227,8 @@ Returns bahai month calendar of the given julian date.
 sub from_julian {
     my ($self, $julian) = @_;
 
-    #return julian_to_bahai($julian);
-    my ($major, $cycle, $y, $m, $d) = julian_to_bahai($julian);
-    my $year = ($major * (19 * ($cycle - 1))) + $y;
-    return _calendar($year, $m);
+    my $date = julian_to_bahai($julian);
+    return _calendar($date->get_year, $date->month);
 }
 
 #

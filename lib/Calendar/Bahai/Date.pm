@@ -22,6 +22,7 @@ use Calendar::Bahai::Utils qw(
     $BAHAI_DAY
     $BAHAI_MONTH_NAMES
 
+    jwday
     get_major_cycle_year
     gregorian_to_julian
     julian_to_gregorian
@@ -46,11 +47,6 @@ sub BUILD {
     my ($self) = @_;
 
     unless ($self->has_year && $self->has_month && $self->has_day) {
-        #my ($major, $cycle, $year) = get_major_cycle_year($self->year - 1);
-        #$self->major($major);
-        #$self->cycle($cycle);
-    #}
-    #else {
         my $today = localtime;
         my $year  = $today->year + 1900;
         my $month = $today->mon + 1;
@@ -96,6 +92,26 @@ sub as_string {
 
     return sprintf("%d, %s %d BE",
                    $self->day, $BAHAI_MONTH_NAMES->[$self->month], $self->year);
+}
+
+=head2 day_of_week()
+
+=cut
+
+sub day_of_week {
+    my ($self) = @_;
+
+    return jwday($self->to_julian);
+}
+
+=head2 get_year()
+
+=cut
+
+sub get_year {
+    my ($self) = @_;
+
+    return ($self->major * (19 * ($self->cycle - 1))) + $self->year;
 }
 
 =head1 AUTHOR
