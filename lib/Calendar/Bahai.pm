@@ -15,11 +15,14 @@ Version 0.12
 use 5.006;
 use Data::Dumper;
 
+use Time::localtime;
+use Term::ANSIColor::Markup;
 use Calendar::Bahai::Date;
 use Calendar::Bahai::Utils qw(
     $BAHAI_YEAR
     $BAHAI_MONTH
     $BAHAI_MONTH_NAMES
+    $BAHAI_DAY_NAMES
 
     day_of_week
     get_major_cycle_year
@@ -27,8 +30,6 @@ use Calendar::Bahai::Utils qw(
     gregorian_to_julian
     julian_to_bahai
 );
-
-use Time::localtime;
 
 use Moo;
 use namespace::clean;
@@ -70,56 +71,62 @@ Bahai  Era  or Badi Era (abbreviated BE or B.E.). Year 1 BE thus began at sundow
 20  March  1844.  Using the Bahai names for the weekday and month, day one of the
 Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
 
-=head2 Bahai Calendar for the month of Baha year 168 BE.
+=head2 Bahai Calendar for the month of Baha year 172 BE.
 
-            Baha [168 BE]
-
-    Sun  Mon  Tue  Wed  Thu  Fri  Sat
-           1    2    3    4    5    6
-      7    8    9   10   11   12   13
-     14   15   16   17   18   19
+   +----------------------------------------------------------------------------+
+   |                             Baha      [172 BE]                             |
+   +----------+----------+----------+----------+----------+----------+----------+
+   |    Jamal |    Kamal |    Fidal |     Idal | Istijlal | Istiqlal |    Jalal |
+   +----------+----------+----------+----------+----------+----------+----------+
+   |                                                                 |        1 |
+   +----------+----------+----------+----------+----------+----------+----------+
+   |        2 |        3 |        4 |        5 |        6 |        7 |        8 |
+   +----------+----------+----------+----------+----------+----------+----------+
+   |        9 |       10 |       11 |       12 |       13 |       14 |       15 |
+   +----------+----------+----------+----------+----------+----------+----------+
+   |       16 |       17 |       18 |       19 |                                |
+   +----------+----------+----------+----------+----------+----------+----------+
 
 =head2 Month Names
 
-    +-------+-------------+---------------------+--------------------+
-    | Month | Arabic Name | English Translation | Gregorian Dates    |
-    +-------+-------------+---------------------+--------------------+
-    | 1     | Baha        | Splendour           | 21 Mar - 08 Apr    |
-    | 2     | Jalal       | Glory               | 09 Apr - 27 Apr    |
-    | 3     | Jamal       | Beauty              | 28 Apr - 16 May    |
-    | 4     | Azamat      | Grandeur            | 17 May - 04 Jun    |
-    | 5     | Nur         | Light               | 05 Jun - 23 Jun    |
-    | 6     | Rahmat      | Mercy               | 24 Jun - 12 Jul    |
-    | 7     | Kalimat     | Words               | 13 Jul - 31 Jul    |
-    | 8     | Kamal       | Perfection          | 01 Aug - 19 Aug    |
-    | 9     | Asma        | Names               | 20 Aug - 07 Sep    |
-    | 10    | Izzat       | Might               | 08 Sep - 26 Sep    |
-    | 11    | Mashiyyat   | Will                | 27 Sep - 15 Oct    |
-    | 12    | Ilm         | Knowledge           | 16 Oct - 03 Nov    |
-    | 13    | Qudrat      | Power               | 04 Nov - 22 Nov    |
-    | 14    | Qawl        | Speech              | 23 Nov - 11 Dec    |
-    | 15    | Masail      | Questions           | 12 Dec - 30 Dec    |
-    | 16    | Sharaf      | Honour              | 31 Dec - 18 Jan    |
-    | 17    | Sultan      | Sovereignty         | 19 Jan - 06 Feb    |
-    | 18    | Mulk        | Dominion            | 07 Feb - 25 Feb    |
-    |       | Ayyam-i-Ha  | The Days of Ha      | 26 Feb - 01 Mar    |
-    | 19    | Ala         | Loftiness           | 02 Mar - 20 Mar    |
-    |       |             |                     | (Month of fasting) |
-    +-------+-------------+---------------------+--------------------+
+    +-------+-------------+----------------+------------------------------------+
+    | Month | Arabic Name | English Name   | Gregorian Dates                    |
+    +-------+-------------+----------------+------------------------------------+
+    | 1     | Baha        | Splendour      | 21 Mar - 08 Apr                    |
+    | 2     | Jalal       | Glory          | 09 Apr - 27 Apr                    |
+    | 3     | Jamal       | Beauty         | 28 Apr - 16 May                    |
+    | 4     | Azamat      | Grandeur       | 17 May - 04 Jun                    |
+    | 5     | Nur         | Light          | 05 Jun - 23 Jun                    |
+    | 6     | Rahmat      | Mercy          | 24 Jun - 12 Jul                    |
+    | 7     | Kalimat     | Words          | 13 Jul - 31 Jul                    |
+    | 8     | Kamal       | Perfection     | 01 Aug - 19 Aug                    |
+    | 9     | Asma        | Names          | 20 Aug - 07 Sep                    |
+    | 10    | Izzat       | Might          | 08 Sep - 26 Sep                    |
+    | 11    | Mashiyyat   | Will           | 27 Sep - 15 Oct                    |
+    | 12    | Ilm         | Knowledge      | 16 Oct - 03 Nov                    |
+    | 13    | Qudrat      | Power          | 04 Nov - 22 Nov                    |
+    | 14    | Qawl        | Speech         | 23 Nov - 11 Dec                    |
+    | 15    | Masail      | Questions      | 12 Dec - 30 Dec                    |
+    | 16    | Sharaf      | Honour         | 31 Dec - 18 Jan                    |
+    | 17    | Sultan      | Sovereignty    | 19 Jan - 06 Feb                    |
+    | 18    | Mulk        | Dominion       | 07 Feb - 25 Feb                    |
+    |       | Ayyam-i-Ha  | The Days of Ha | 26 Feb - 01 Mar                    |
+    | 19    | Ala         | Loftiness      | 02 Mar - 20 Mar (Fasting Month)    |
+    +-------+-------------+----------------+------------------------------------+
 
 =head2 Weekdays
 
-    +-------------+---------------------+-----------------+
-    | Arabic Name | English Translation | Day of the Week |
-    +-------------+---------------------+-----------------+
-    | Jalal       | Glory               | Saturday        |
-    | Jamal       | Beauty              | Sunday          |
-    | Kamal       | Perfection          | Monday          |
-    | Fidal       | Grace               | Tuesday         |
-    | Idal        | Justice             | Wednesday       |
-    | Istijlal    | Majesty             | Thursday        |
-    | Istiqlal    | Independence        | Friday          |
-    +-------------+---------------------+-----------------+
+    +-------------+--------------+----------------------------------------------+
+    | Arabic Name | English Name | Day of the Week                              |
+    +-------------+---------------------+---------------------------------------+
+    | Jamal       | Beauty       | Sunday                                       |
+    | Kamal       | Perfection   | Monday                                       |
+    | Fidal       | Grace        | Tuesday                                      |
+    | Idal        | Justice      | Wednesday                                    |
+    | Istijlal    | Majesty      | Thursday                                     |
+    | Istiqlal    | Independence | Friday                                       |
+    | Jalal       | Glory        | Saturday                                     |
+    +-------------+--------------+----------------------------------------------+
 
 =head2 Kull-i-Shay and Vahid
 
@@ -238,19 +245,47 @@ sub from_julian {
 sub _calendar {
     my ($year, $month) = @_;
 
-    my $calendar = sprintf("\n\t%s [%d BE]\n",
-                           $BAHAI_MONTH_NAMES->[$month], $year);
-    $calendar .= "\nSun  Mon  Tue  Wed  Thu  Fri  Sat\n";
-
     my ($major, $cycle, $y) = get_major_cycle_year($year - 1);
     my $start_index = day_of_week($major, $cycle, $y, $month, 1);
-    map { $calendar .= "     " } (1..($start_index %= 7));
+
+    my $line1 = '<blue><bold>+' . ('-')x76 . '+</bold></blue>';
+    my $line2 = '<blue><bold>|</bold></blue>' .
+                (' ')x29 . '<yellow><bold>' .
+                sprintf("%-9s [%3d BE]", $BAHAI_MONTH_NAMES->[$month], $year) .
+                '</bold></yellow>' . (' ')x29 . '<blue><bold>|</bold></blue>';
+    my $line3 = '<blue><bold>+';
+
+    for(1..7) {
+        $line3 .= ('-')x(10) . '+';
+    }
+    $line3 .= '</bold></blue>';
+
+    my $line4 = '<blue><bold>|</bold></blue>' .
+                join("<blue><bold>|</bold></blue>", @$BAHAI_DAY_NAMES) .
+                '<blue><bold>|</bold></blue>';
+
+    my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";
+    $calendar .= '<blue><bold>|</bold></blue>          ';
+
+    map { $calendar .= "           " } (2..($start_index %= 7));
     foreach (1 .. 19) {
-        $calendar .= sprintf("%3d  ", $_);
-        $calendar .= "\n" unless (($start_index + $_) % 7);
+        $calendar .= sprintf("<blue><bold>|</bold></blue><cyan><bold>%9d </bold></cyan>", $_);
+        if ($_ != 19) {
+            $calendar .= "<blue><bold>|</bold></blue>\n" . $line3 . "\n"
+                unless (($start_index + $_) % 7);
+        }
+        elsif ($_ == 19) {
+            my $x = 7 - (($start_index + $_) % 7);
+            if (($x >= 2) && ($x != 7)) {
+                $calendar .= '<blue><bold>|</bold></blue>          ';
+                map { $calendar .= ' 'x11 } (1..$x-1);
+            }
+        }
     }
 
-    return sprintf("%s\n\n", $calendar);
+    $calendar = sprintf("%s<blue><bold>|</bold></blue>\n%s\n", $calendar, $line3);
+
+    return Term::ANSIColor::Markup->colorize($calendar);
 }
 
 =head1 AUTHOR

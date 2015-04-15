@@ -63,8 +63,13 @@ our $BAHAI_CYCLES = [
     'Vahid' ];
 
 our $BAHAI_DAY_NAMES = [
-    'Jamal',    'Kamal',    'Fidal', 'Idal',
-    'Istijlal', 'Istiqlal', 'Jalal' ];
+    '<yellow><bold>    Jamal </bold></yellow>',
+    '<yellow><bold>    Kamal </bold></yellow>',
+    '<yellow><bold>    Fidal </bold></yellow>',
+    '<yellow><bold>     Idal </bold></yellow>',
+    '<yellow><bold> Istijlal </bold></yellow>',
+    '<yellow><bold> Istiqlal </bold></yellow>',
+    '<yellow><bold>    Jalal </bold></yellow>' ];
 
 our $BAHAI_YEAR  = sub { validate_year(@_)  };
 our $BAHAI_MONTH = sub { validate_month(@_) };
@@ -73,6 +78,8 @@ our $BAHAI_DAY   = sub { validate_day(@_)   };
 =head1 METHODS
 
 =head2 validate_year($year)
+
+Dies if the given C<$year> is not a valid Bahai year.
 
 =cut
 
@@ -85,6 +92,8 @@ sub validate_year {
 
 =head2 validate_month($month)
 
+Dies if the given C<$month> is not a valid Bahai month.
+
 =cut
 
 sub validate_month {
@@ -95,6 +104,8 @@ sub validate_month {
 }
 
 =head2 validate_day($day)
+
+Dies if the given C<$day> is not a valid Bahai day.
 
 =cut
 
@@ -107,6 +118,8 @@ sub validate_day {
 
 =head2 jwday($julian_date)
 
+Returns day of week for the given Julian date C<$julian_date>, with 0 for Sunday.
+
 =cut
 
 sub jwday {
@@ -114,6 +127,12 @@ sub jwday {
 
     return floor($julian_date + 1.5) % 7;
 }
+
+=head2 day_of_week($major, $cycle, $year, $month, $day)
+
+Returns day of week for the given Bahai date, with 0 for Sunday.
+
+=cut
 
 sub day_of_week {
     my ($major, $cycle, $year, $month, $day) = @_;
@@ -133,6 +152,8 @@ sub day_of_week {
 
 =head2 gregorian_to_bahai($year, $month, $day)
 
+Returns Bahai date object of type L<Calendar::Bahai::Date>.
+
 =cut
 
 sub gregorian_to_bahai {
@@ -142,6 +163,9 @@ sub gregorian_to_bahai {
 }
 
 =head2 julian_to_bahai($julian_date)
+
+Returns Bahai date object of type L<Calendar::Bahai::Date> equivalent of the given
+Julian date C<$julian_date>.
 
 =cut
 
@@ -173,7 +197,9 @@ sub julian_to_bahai {
         day   => $day });
 }
 
-=head2 gregorian_to_julian()
+=head2 gregorian_to_julian($year, $month, $day)
+
+Returns Julian date equivalent of the given Gregorian date.
 
 =cut
 
@@ -190,7 +216,9 @@ sub gregorian_to_julian {
            $day);
 }
 
-=head2 julian_to_gregorian()
+=head2 julian_to_gregorian($julian_date)
+
+Returns Gregorian date equivalent of the given Julian date C<$julian_date>.
 
 =cut
 
@@ -220,6 +248,8 @@ sub julian_to_gregorian {
 
 =head2 get_major_cycle_year($bahai_year)
 
+Returns the attribute Major, Cycle and Year of the given Bahai year C<$bahai_year>.
+
 =cut
 
 sub get_major_cycle_year {
@@ -233,6 +263,8 @@ sub get_major_cycle_year {
 }
 
 =head2 is_gregorian_leap_year($year)
+
+Returns 0 or 1 if the given Gregorian year C<$year> is a leap year or not.
 
 =cut
 

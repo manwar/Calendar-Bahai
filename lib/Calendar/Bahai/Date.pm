@@ -35,6 +35,8 @@ use namespace::clean;
 
 =head1 DESCRIPTION
 
+Represents the Bahai date.
+
 =cut
 
 has major => (is => 'rw');
@@ -65,6 +67,7 @@ sub BUILD {
 
 =head2 to_julian()
 
+Returns the julian date equivalent of the Bahai date.
 
 =cut
 
@@ -88,6 +91,8 @@ sub to_julian {
 
 =head2 as_string()
 
+Returns Bahai date as human readable format e.g. 5, Baha 172 BE.
+
 =cut
 
 sub as_string {
@@ -99,6 +104,8 @@ sub as_string {
 
 =head2 day_of_week()
 
+Returns day of the week, starting 0 for Sunday.
+
 =cut
 
 sub day_of_week {
@@ -108,6 +115,8 @@ sub day_of_week {
 }
 
 =head2 get_year()
+
+Returns the bahai year e.g. 172
 
 =cut
 
