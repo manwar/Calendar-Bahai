@@ -15,6 +15,7 @@ Version 0.12
 use 5.006;
 use Data::Dumper;
 use Time::localtime;
+
 use Calendar::Bahai::Utils qw(
     $BAHAI_EPOCH
     $BAHAI_YEAR
@@ -32,6 +33,8 @@ use Calendar::Bahai::Utils qw(
 
 use Moo;
 use namespace::clean;
+
+use overload q{""} => 'as_string', fallback => 1;
 
 =head1 DESCRIPTION
 
@@ -53,32 +56,51 @@ sub BUILD {
         my $year  = $today->year + 1900;
         my $month = $today->mon + 1;
         my $day   = $today->mday;
-        my $date  = gregorian_to_bahai($year, $month, $day);
-
-        $self->major($date->major);
-        $self->cycle($date->cycle);
-        $self->year($date->year);
-        $self->month($date->month);
-        $self->day($date->day);
+        my ($major, $cycle, $y, $m, $d) = gregorian_to_bahai($year, $month, $day);
+        $self->major($major);
+        $self->cycle($cycle);
+        $self->year($y);
+        $self->month($m);
+        $self->day($d);
     }
 }
+
+=head1 SYNOPSIS
+
+    use strict; use warnings;
+    use Calendar::Bahai::Date;
+
+    # prints today's bahai date
+    print Calendar::Bahai::Date->new->as_string, "\n";
+
+    my $date = Calendar::Bahai::Date->new({ major => 1, cycle => 10,  year => 1, month => 1, day => 1 });
+    print "Date: $date\n";
+
+    # prints Julian date
+    print $date->to_julian, "\n";
+
+    # prints Gregorian date
+    print $date->to_gregorian, "\n";
+
+    # prints day of the week index (0 for Jamal, 1 for Kamal and so on)
+    print $date->day_of_week, "\n";
 
 =head1 METHODS
 
 =head2 to_julian()
 
-Returns the julian date equivalent of the Bahai date.
+Returns julian date equivalent of the Bahai date.
 
 =cut
 
 sub to_julian {
     my ($self) = @_;
 
-    my ($year) = julian_to_gregorian($BAHAI_EPOCH);
-    my $gy     = (361 * ($self->major - 1)) +
-                 (19  * ($self->cycle - 1)) +
-                 ($self->year - 1) + $year;
-    my $month  = $self->month;
+    my $year  = (julian_to_gregorian($BAHAI_EPOCH))[0];
+    my $gy    = (361 * ($self->major - 1)) +
+                (19  * ($self->cycle - 1)) +
+                ($self->year - 1) + $year;
+    my $month = $self->month;
 
     return gregorian_to_julian($gy, 3, 20)
            +
@@ -89,22 +111,34 @@ sub to_julian {
            $self->day;
 }
 
-=head2 as_string()
+=head2 to_gregorian()
 
-Returns Bahai date as human readable format e.g. 5, Baha 172 BE.
+Returns gregorian date (yyyy-mm-dd) equivalent of the Bahai date.
 
 =cut
 
-sub as_string {
+sub to_gregorian {
     my ($self) = @_;
 
-    return sprintf("%d, %s %d BE",
-                   $self->day, $BAHAI_MONTH_NAMES->[$self->month], $self->year);
+    my @date = julian_to_gregorian($self->to_julian);
+    return sprintf("%04d-%02d-%02d", $date[0], $date[1], $date[2]);
 }
 
 =head2 day_of_week()
 
-Returns day of the week, starting 0 for Sunday.
+Returns day of the week, starting 0 for Jamal, 1 for Kamal and so on.
+
+    +-------------+--------------+----------------------------------------------+
+    | Arabic Name | English Name | Day of the Week                              |
+    +-------------+---------------------+---------------------------------------+
+    | Jamal       | Beauty       | Sunday                                       |
+    | Kamal       | Perfection   | Monday                                       |
+    | Fidal       | Grace        | Tuesday                                      |
+    | Idal        | Justice      | Wednesday                                    |
+    | Istijlal    | Majesty      | Thursday                                     |
+    | Istiqlal    | Independence | Friday                                       |
+    | Jalal       | Glory        | Saturday                                     |
+    +-------------+--------------+----------------------------------------------+
 
 =cut
 
@@ -124,6 +158,13 @@ sub get_year {
     my ($self) = @_;
 
     return ($self->major * (19 * ($self->cycle - 1))) + $self->year;
+}
+
+sub as_string {
+    my ($self) = @_;
+
+    return sprintf("%d, %s %d BE",
+                   $self->day, $BAHAI_MONTH_NAMES->[$self->month], $self->get_year);
 }
 
 =head1 AUTHOR

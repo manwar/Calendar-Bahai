@@ -12,11 +12,13 @@ Version 0.12
 
 =cut
 
+use overload q{""} => 'as_string', fallback => 1;
+
 use 5.006;
 use Data::Dumper;
-
 use Time::localtime;
 use Term::ANSIColor::Markup;
+
 use Calendar::Bahai::Date;
 use Calendar::Bahai::Utils qw(
     $BAHAI_YEAR
@@ -24,7 +26,6 @@ use Calendar::Bahai::Utils qw(
     $BAHAI_MONTH_NAMES
     $BAHAI_DAY_NAMES
 
-    day_of_week
     get_major_cycle_year
     gregorian_to_bahai
     gregorian_to_julian
@@ -44,25 +45,15 @@ sub BUILD {
         my $today = localtime;
         my $year  = $today->year + 1900;
         my $month = $today->mon + 1;
-        my $date  = gregorian_to_bahai($year, $month, 1);
-        $year = ($date->major * (19 * ($date->cycle - 1))) + $date->year;
-        $self->year($year);
+
+        my ($major, $cycle, $y, $m, $d) = gregorian_to_bahai($year, $month, 1);
+        my $date = _date($major, $cycle, $y, $m, $d);
+        $self->year($date->get_year);
         $self->month($date->month);
     }
 }
 
-=head1 NOTICE
-
-On July 10, 2014, the  Universal  House  of  Justice  announced  three  decisions
-regarding the Badi` (Bahai) calendar,  which  will affect the dates of Feasts and
-Holy Days. Naw Ruz will usually fall on March 20th,which means that all the Feast
-days will be one day earlier,and the births of the Bab and of Baha'u'llah will be
-celebrated on two consecutive days in the Autumn.The changes take effect from the
-next Bahai New Year, from sunset on March 20, 2015. The definitive tables showing
-the new dates have not yet been released (as of September 24, 2014), but there is
-a preliminary discussion L<here|http://senmcglinn.wordpress.com/2014/09/22/changes-in-bahai-calendar-what-how-why>.
-
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 The  Bahai  calendar started from the original Badi calendar, created by the Bab.
 The  Bahai  calendar  is  composed  of 19 months, each with 19 days. Years in the
@@ -87,7 +78,24 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
    |       16 |       17 |       18 |       19 |                                |
    +----------+----------+----------+----------+----------+----------+----------+
 
-=head2 Month Names
+=head1 SYNOPSIS
+
+    use strict; use warnings;
+    use Calendar::Bahai;
+
+    # prints current month calendar
+    print Calendar::Bahai->new->current, "\n";
+
+    # prints calendar for the first month of year 172 (bahai calendar)
+    print Calendar::Bahai->new({ month => 1, year => 172 })->as_string, "\n";
+
+    # prints calendar equivalent of the first month of year 2015 (gregorian calendar)
+    print Calendar::Bahai->new->from_gregorian(2015, 1, 14), "\n";
+
+    # prints calendar equivalent of the given julian date.
+    print Calendar::Bahai->new->from_julian(2457102.5), "\n";
+
+=head1 BAHAI MONTHS
 
     +-------+-------------+----------------+------------------------------------+
     | Month | Arabic Name | English Name   | Gregorian Dates                    |
@@ -114,7 +122,7 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     | 19    | Ala         | Loftiness      | 02 Mar - 20 Mar (Fasting Month)    |
     +-------+-------------+----------------+------------------------------------+
 
-=head2 Weekdays
+=head1 BAHAI DAYS
 
     +-------------+--------------+----------------------------------------------+
     | Arabic Name | English Name | Day of the Week                              |
@@ -128,7 +136,7 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     | Jalal       | Glory        | Saturday                                     |
     +-------------+--------------+----------------------------------------------+
 
-=head2 Kull-i-Shay and Vahid
+=head1 KULL-i-SHAY / VAHID
 
 Also  existing in the Bahai calendar system is a 19-year cycle called Vahid and a
 361-year (19x19) supercycle called Kull-i-Shay (literally, "All Things"). Each of
@@ -164,24 +172,18 @@ begin in 2205.
     | 19 | Vahid  | Unity         | 1862 | 1881 | 1900 | 1919 | 1938 | 1957 | 1976 | 1995 | 2014 | 2033 | 2052 | 2071 | 2090 | 2109 | 2128 | 2147 | 2166 | 2185 | 2204 |
     +----+--------+---------------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+
 
+=head1 NOTE
+
+On July 10, 2014, the  Universal  House  of  Justice  announced  three  decisions
+regarding the Badi` (Bahai) calendar,  which  will affect the dates of Feasts and
+Holy Days. Naw Ruz will usually fall on March 20th,which means that all the Feast
+days will be one day earlier,and the births of the Bab and of Baha'u'llah will be
+celebrated on two consecutive days in the Autumn.The changes take effect from the
+next Bahai New Year, from sunset on March 20, 2015. The definitive tables showing
+the new dates have not yet been released (as of September 24, 2014), but there is
+a preliminary discussion L<here|http://senmcglinn.wordpress.com/2014/09/22/changes-in-bahai-calendar-what-how-why>.
+
 =head1 METHODS
-
-=head2 as_string()
-
-Returns current month of the Bahai calendar.
-
-    use strict; use warnings;
-    use Calendar::Bahai;
-
-    print Calendar::Bahai->new()->as_string() . "\n";
-
-=cut
-
-sub as_string {
-    my ($self) = @_;
-
-    return _calendar($self->year, $self->month);
-}
 
 =head2 current()
 
@@ -190,7 +192,7 @@ Returns current month of the Bahai calendar.
     use strict; use warnings;
     use Calendar::Bahai;
 
-    print Calendar::Bahai->new()->current;
+    print Calendar::Bahai->new->current, "\n";
 
 =cut
 
@@ -198,7 +200,10 @@ sub current {
     my ($self) = @_;
 
     my $today = localtime;
-    my $date  = julian_to_bahai(gregorian_to_julian($today->year+1900, $today->mon+1, $today->mday));
+    my $julian_date = gregorian_to_julian($today->year+1900, $today->mon+1, $today->mday);
+    my ($major, $cycle, $year, $month, $day) = julian_to_bahai($julian_date);
+    my $date = _date($major, $cycle, $year, $month, $day);
+
     return _calendar($date->get_year, $date->month);
 }
 
@@ -209,14 +214,17 @@ Returns bahai month calendar of the given gregorian month and year.
     use strict; use warnings;
     use Calendar::Bahai;
 
-    print Calendar::Bahai->new()->from_gregorian(2014, 4, 13), "\n";
+    print Calendar::Bahai->new->from_gregorian(2014, 4, 13), "\n";
 
 =cut
 
 sub from_gregorian {
     my ($self, $year, $month, $day) = @_;
 
-    my $date = julian_to_bahai(gregorian_to_julian($year, $month, $day));
+    my $julian_date = gregorian_to_julian($year, $month, $day);
+    my ($major, $cycle, $y, $m, $d) = julian_to_bahai($julian_date);
+    my $date = _date($major, $cycle, $y, $m, $d);
+
     return _calendar($date->get_year, $date->month);
 }
 
@@ -227,27 +235,47 @@ Returns bahai month calendar of the given julian date.
     use strict; use warnings;
     use Calendar::Bahai;
 
-    print Calendar::Bahai->new()->from_julian(2457102.5), "\n";
+    print Calendar::Bahai->new->from_julian(2457102.5), "\n";
 
 =cut
 
 sub from_julian {
     my ($self, $julian) = @_;
 
-    my $date = julian_to_bahai($julian);
+    my ($major, $cycle, $year, $month, $day) = julian_to_bahai($julian);
+    my $date = _date($major, $cycle, $year, $month, $day);
+
     return _calendar($date->get_year, $date->month);
+}
+
+sub as_string {
+    my ($self) = @_;
+
+    return _calendar($self->year, $self->month);
 }
 
 #
 #
 # PRIVATE METHODS
 
+sub _date {
+    my ($major, $cycle, $year, $month, $day) = @_;
+
+    return Calendar::Bahai::Date->new({
+        major => $major,
+        cycle => $cycle,
+        year  => $year,
+        month => $month,
+        day   => $day });
+}
+
 sub _calendar {
     my ($year, $month) = @_;
 
     my ($major, $cycle, $y) = get_major_cycle_year($year - 1);
-    my $start_index = day_of_week($major, $cycle, $y, $month, 1);
 
+    my $date = _date($major, $cycle, $y, $month, 1);
+    my $start_index = $date->day_of_week;
     my $line1 = '<blue><bold>+' . ('-')x76 . '+</bold></blue>';
     my $line2 = '<blue><bold>|</bold></blue>' .
                 (' ')x29 . '<yellow><bold>' .

@@ -23,7 +23,6 @@ WriteMakefile(
         'Moo'              => 0,
         'namespace::clean' => 0,
         'Time::localtime'  => 1.02,
-        'Astro::Utils'     => 0,
         'Term::ANSIColor::Markup' => '0.06',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
