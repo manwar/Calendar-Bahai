@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.12';
+$Calendar::Bahai::VERSION = '0.13';
 
 =head1 NAME
 
@@ -8,32 +8,28 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =cut
 
-use overload q{""} => 'as_string', fallback => 1;
-
 use 5.006;
 use Data::Dumper;
-use Time::localtime;
-use Term::ANSIColor::Markup;
 
 use Calendar::Bahai::Date;
 use Calendar::Bahai::Utils qw(
     $BAHAI_YEAR
     $BAHAI_MONTH
-    $BAHAI_MONTH_NAMES
-    $BAHAI_DAY_NAMES
 
+    get_bahai_month_calendar
     get_major_cycle_year
-    gregorian_to_bahai
     gregorian_to_julian
     julian_to_bahai
 );
 
 use Moo;
 use namespace::clean;
+
+use overload q{""} => 'as_string', fallback => 1;
 
 has year  => (is => 'rw', isa => $BAHAI_YEAR,  predicate => 1);
 has month => (is => 'rw', isa => $BAHAI_MONTH, predicate => 1, default => sub { 1 });
@@ -42,12 +38,7 @@ sub BUILD {
     my ($self) = @_;
 
     unless ($self->has_year) {
-        my $today = localtime;
-        my $year  = $today->year + 1900;
-        my $month = $today->mon + 1;
-
-        my ($major, $cycle, $y, $m, $d) = gregorian_to_bahai($year, $month, 1);
-        my $date = _date($major, $cycle, $y, $m, $d);
+        my $date = Calendar::Bahai::Date->new;
         $self->year($date->get_year);
         $self->month($date->month);
     }
@@ -61,8 +52,6 @@ Bahai  calendar  are  counted  from Thursday, 21 March 1844, the beginning of th
 Bahai  Era  or Badi Era (abbreviated BE or B.E.). Year 1 BE thus began at sundown
 20  March  1844.  Using the Bahai names for the weekday and month, day one of the
 Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
-
-=head2 Bahai Calendar for the month of Baha year 172 BE.
 
    +----------------------------------------------------------------------------+
    |                             Baha      [172 BE]                             |
@@ -89,7 +78,7 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     # prints calendar for the first month of year 172 (bahai calendar)
     print Calendar::Bahai->new({ month => 1, year => 172 })->as_string, "\n";
 
-    # prints calendar equivalent of the first month of year 2015 (gregorian calendar)
+    # prints calendar month where theequivalent of the first month of year 2015 (gregorian calendar)
     print Calendar::Bahai->new->from_gregorian(2015, 1, 14), "\n";
 
     # prints calendar equivalent of the given julian date.
@@ -199,17 +188,13 @@ Returns current month of the Bahai calendar.
 sub current {
     my ($self) = @_;
 
-    my $today = localtime;
-    my $julian_date = gregorian_to_julian($today->year+1900, $today->mon+1, $today->mday);
-    my ($major, $cycle, $year, $month, $day) = julian_to_bahai($julian_date);
-    my $date = _date($major, $cycle, $year, $month, $day);
-
+    my $date = Calendar::Bahai::Date->new;
     return _calendar($date->get_year, $date->month);
 }
 
 =head2 from_gregorian($year, $month, $day)
 
-Returns bahai month calendar of the given gregorian month and year.
+Returns bahai month calendar in which the given gregorian date falls in.
 
     use strict; use warnings;
     use Calendar::Bahai;
@@ -230,7 +215,7 @@ sub from_gregorian {
 
 =head2 from_julian($julian_date)
 
-Returns bahai month calendar of the given julian date.
+Returns bahai month calendar in which the given julian date falls in.
 
     use strict; use warnings;
     use Calendar::Bahai;
@@ -273,47 +258,10 @@ sub _calendar {
     my ($year, $month) = @_;
 
     my ($major, $cycle, $y) = get_major_cycle_year($year - 1);
-
     my $date = _date($major, $cycle, $y, $month, 1);
     my $start_index = $date->day_of_week;
-    my $line1 = '<blue><bold>+' . ('-')x76 . '+</bold></blue>';
-    my $line2 = '<blue><bold>|</bold></blue>' .
-                (' ')x29 . '<yellow><bold>' .
-                sprintf("%-9s [%3d BE]", $BAHAI_MONTH_NAMES->[$month], $year) .
-                '</bold></yellow>' . (' ')x29 . '<blue><bold>|</bold></blue>';
-    my $line3 = '<blue><bold>+';
 
-    for(1..7) {
-        $line3 .= ('-')x(10) . '+';
-    }
-    $line3 .= '</bold></blue>';
-
-    my $line4 = '<blue><bold>|</bold></blue>' .
-                join("<blue><bold>|</bold></blue>", @$BAHAI_DAY_NAMES) .
-                '<blue><bold>|</bold></blue>';
-
-    my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";
-    $calendar .= '<blue><bold>|</bold></blue>          ';
-
-    map { $calendar .= "           " } (2..($start_index %= 7));
-    foreach (1 .. 19) {
-        $calendar .= sprintf("<blue><bold>|</bold></blue><cyan><bold>%9d </bold></cyan>", $_);
-        if ($_ != 19) {
-            $calendar .= "<blue><bold>|</bold></blue>\n" . $line3 . "\n"
-                unless (($start_index + $_) % 7);
-        }
-        elsif ($_ == 19) {
-            my $x = 7 - (($start_index + $_) % 7);
-            if (($x >= 2) && ($x != 7)) {
-                $calendar .= '<blue><bold>|</bold></blue>          ';
-                map { $calendar .= ' 'x11 } (1..$x-1);
-            }
-        }
-    }
-
-    $calendar = sprintf("%s<blue><bold>|</bold></blue>\n%s\n", $calendar, $line3);
-
-    return Term::ANSIColor::Markup->colorize($calendar);
+    return get_bahai_month_calendar($year, $month, $start_index);
 }
 
 =head1 AUTHOR
@@ -323,6 +271,10 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 =head1 REPOSITORY
 
 L<https://github.com/Manwar/Calendar-Bahai>
+
+=head1 ACKNOWLEDGEMENTS
+
+Entire logic is based on the L<code|http://www.fourmilab.ch/documents/calendar> written by John Walker.
 
 =head1 BUGS
 

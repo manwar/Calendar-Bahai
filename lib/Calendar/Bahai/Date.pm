@@ -1,6 +1,6 @@
 package Calendar::Bahai::Date;
 
-$Calendar::Bahai::Date::VERSION = '0.12';
+$Calendar::Bahai::Date::VERSION = '0.13';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai::Date - Represents Bahai date.
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =cut
 
@@ -97,16 +97,16 @@ sub to_julian {
     my ($self) = @_;
 
     my $year  = (julian_to_gregorian($BAHAI_EPOCH))[0];
-    my $gy    = (361 * ($self->major - 1)) +
-                (19  * ($self->cycle - 1)) +
-                ($self->year - 1) + $year;
     my $month = $self->month;
+    my $gregorian_year = (361 * ($self->major - 1)) +
+                         (19  * ($self->cycle - 1)) +
+                         ($self->year - 1) + $year;
 
-    return gregorian_to_julian($gy, 3, 20)
+    return gregorian_to_julian($gregorian_year, 3, 20)
            +
            (19 * ($month - 1))
            +
-           (($month != 20) ? 0 : (is_gregorian_leap_year($gy + 1) ? -14 : -15))
+           (($month != 20) ? 0 : (is_gregorian_leap_year($gregorian_year + 1) ? -14 : -15))
            +
            $self->day;
 }

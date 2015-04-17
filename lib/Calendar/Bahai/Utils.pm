@@ -1,6 +1,6 @@
 package Calendar::Bahai::Utils;
 
-$Calendar::Bahai::Utils::VERSION = '0.12';
+$Calendar::Bahai::Utils::VERSION = '0.13';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai::Utils - Helper package for Calendar::Bahai.
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =head1 DESCRIPTION
 
@@ -20,6 +20,7 @@ use strict; use warnings;
 use 5.006;
 use Data::Dumper;
 use POSIX qw/floor/;
+use Term::ANSIColor::Markup;
 use parent 'Exporter';
 
 use vars qw(@EXPORT_OK);
@@ -33,12 +34,15 @@ use vars qw(@EXPORT_OK);
     $BAHAI_MONTH
     $BAHAI_DAY
 
-    validate_year
-    validate_month
-    validate_day
+    get_bahai_month_calendar
+    validate_bahai_year
+    validate_bahai_month
+    validate_bahai_day
     jwday
     gregorian_to_bahai
+    bahai_to_gregorian
     julian_to_bahai
+    bahai_to_julian
     gregorian_to_julian
     julian_to_gregorian
     get_major_cycle_year
@@ -53,14 +57,16 @@ our $BAHAI_MONTH_NAMES = [
     'Baha',    'Jalal', 'Jamal',  'Azamat', 'Nur',       'Rahmat',
     'Kalimat', 'Kamal', 'Asma',   'Izzat',  'Mashiyyat', 'Ilm',
     'Qudrat',  'Qawl',  'Masail', 'Sharaf', 'Sultan',    'Mulk',
-    'Ala' ];
+    'Ala'
+];
 
 our $BAHAI_CYCLES = [
     '',
     'Alif', 'Ba',     'Ab',    'Dal',  'Bab',    'Vav',
     'Abad', 'Jad',    'Baha',  'Hubb', 'Bahhaj', 'Javab',
     'Ahad', 'Vahhab', 'Vidad', 'Badi', 'Bahi',   'Abha',
-    'Vahid' ];
+    'Vahid'
+];
 
 our $BAHAI_DAY_NAMES = [
     '<yellow><bold>    Jamal </bold></yellow>',
@@ -69,47 +75,48 @@ our $BAHAI_DAY_NAMES = [
     '<yellow><bold>     Idal </bold></yellow>',
     '<yellow><bold> Istijlal </bold></yellow>',
     '<yellow><bold> Istiqlal </bold></yellow>',
-    '<yellow><bold>    Jalal </bold></yellow>' ];
+    '<yellow><bold>    Jalal </bold></yellow>'
+];
 
-our $BAHAI_YEAR  = sub { validate_year(@_)  };
-our $BAHAI_MONTH = sub { validate_month(@_) };
-our $BAHAI_DAY   = sub { validate_day(@_)   };
+our $BAHAI_YEAR  = sub { validate_bahai_year(@_)  };
+our $BAHAI_MONTH = sub { validate_bahai_month(@_) };
+our $BAHAI_DAY   = sub { validate_bahai_day(@_)   };
 
 =head1 METHODS
 
-=head2 validate_year($year)
+=head2 validate_bahai_year($year)
 
 Dies if the given C<$year> is not a valid Bahai year.
 
 =cut
 
-sub validate_year {
+sub validate_bahai_year {
     my ($year) = @_;
 
     die("ERROR: Invalid year [$year].\n")
         unless (defined($year) && ($year =~ /^\d+$/) && ($year > 0));
 }
 
-=head2 validate_month($month)
+=head2 validate_bahai_month($month)
 
 Dies if the given C<$month> is not a valid Bahai month.
 
 =cut
 
-sub validate_month {
+sub validate_bahai_month {
     my ($month) = @_;
 
-    #die("ERROR: Invalid month [$month].\n")
-    #    unless (defined($month) && ($month =~ /^\d{1,2}$/) && ($month >= 1) && ($month <= 19));
+    die("ERROR: Invalid month [$month].\n")
+        unless (defined($month) && ($month =~ /^\d{1,2}$/) && ($month >= 1) && ($month <= 19));
 }
 
-=head2 validate_day($day)
+=head2 validate_bahai_day($day)
 
 Dies if the given C<$day> is not a valid Bahai day.
 
 =cut
 
-sub validate_day {
+sub validate_bahai_day {
     my ($day) = @_;
 
     die ("ERROR: Invalid day [$day].\n")
@@ -130,7 +137,8 @@ sub jwday {
 
 =head2 gregorian_to_bahai($year, $month, $day)
 
-Returns Bahai date object of type L<Calendar::Bahai::Date>.
+Returns Bahai date component as list (majaor, cycle, year, month, day) equivalent
+of the given gregorian date.
 
 =cut
 
@@ -140,10 +148,22 @@ sub gregorian_to_bahai {
     return julian_to_bahai(gregorian_to_julian($year, $month, $day));
 }
 
+=head2 bahai_to_gregorian($major, $cycle, $year, $month, $day)
+
+Returns Gregorian date as list (yyyy, mm, dd) equivalent of the given bahai date.
+
+=cut
+
+sub bahai_to_gregorian {
+    my ($major, $cycle, $year, $month, $day) = @_;
+
+    return julian_to_gregorian(bahai_to_julian($major, $cycle, $year, $month, $day));
+}
+
 =head2 julian_to_bahai($julian_date)
 
-Returns Bahai date object of type L<Calendar::Bahai::Date> equivalent of the given
-Julian date C<$julian_date>.
+Returns Bahai date component as list (majaor, cycle, year, month, day) equivalent
+of the given Julian date C<$julian_date>.
 
 =cut
 
@@ -160,12 +180,35 @@ sub julian_to_bahai {
     my $bahai_year = $gregorian_year - ($start_year + ((($j1 <= $julian_date) && ($julian_date <= $j2)) ? 1 : 0));
     my ($major, $cycle, $year) = get_major_cycle_year($bahai_year);
 
-    my $days  = $julian_date - _bahai_to_julian($major, $cycle, $year, 1, 1);
-    my $bld   = _bahai_to_julian($major, $cycle, $year, 20, 1);
+    my $days  = $julian_date - bahai_to_julian($major, $cycle, $year, 1, 1);
+    my $bld   = bahai_to_julian($major, $cycle, $year, 20, 1);
     my $month = ($julian_date >= $bld) ? 20 : (floor($days / 19) + 1);
-    my $day   = ($julian_date + 1) - _bahai_to_julian($major, $cycle, $year, $month, 1);
+    my $day   = ($julian_date + 1) - bahai_to_julian($major, $cycle, $year, $month, 1);
 
     return ($major, $cycle, $year, $month, $day);
+}
+
+=head2 bahai_to_julian($major, $cycle, $year, $month, $day)
+
+Returns julian date of the given bahai date.
+
+=cut
+
+sub bahai_to_julian {
+    my ($major, $cycle, $year, $month, $day) = @_;
+
+    my ($g_year) = julian_to_gregorian($BAHAI_EPOCH);
+    my $gy     = (361 * ($major - 1)) +
+                 (19  * ($cycle - 1)) +
+                 ($year - 1) + $g_year;
+
+    return gregorian_to_julian($gy, 3, 20)
+           +
+           (19 * ($month - 1))
+           +
+           (($month != 20) ? 0 : (is_gregorian_leap_year($gy + 1) ? -14 : -15))
+           +
+           $day;
 }
 
 =head2 gregorian_to_julian($year, $month, $day)
@@ -189,7 +232,8 @@ sub gregorian_to_julian {
 
 =head2 julian_to_gregorian($julian_date)
 
-Returns Gregorian date equivalent of the given Julian date C<$julian_date>.
+Returns Gregorian date as list (yyyy, mm, dd) equivalent of the given Julian date
+C<$julian_date>.
 
 =cut
 
@@ -219,8 +263,8 @@ sub julian_to_gregorian {
 
 =head2 get_major_cycle_year($bahai_year)
 
-Returns the attribute Major, Cycle and Year(as in Kull-i-Shay) of the given Bahai
-year C<$bahai_year>.
+Returns the attribute as list major, cycle & year as in Kull-i-Shay) of the given
+Bahai year C<$bahai_year>.
 
 =cut
 
@@ -247,33 +291,59 @@ sub is_gregorian_leap_year {
             (!((($year % 100) == 0) && (($year % 400) != 0)));
 }
 
+sub get_bahai_month_calendar {
+    my ($year, $month, $start_index) = @_;
+
+    my $line1 = '<blue><bold>+' . ('-')x76 . '+</bold></blue>';
+    my $line2 = '<blue><bold>|</bold></blue>' .
+                (' ')x29 . '<yellow><bold>' .
+                sprintf("%-9s [%3d BE]", $BAHAI_MONTH_NAMES->[$month], $year) .
+                '</bold></yellow>' . (' ')x29 . '<blue><bold>|</bold></blue>';
+    my $line3 = '<blue><bold>+';
+
+    for(1..7) {
+        $line3 .= ('-')x(10) . '+';
+    }
+    $line3 .= '</bold></blue>';
+
+    my $line4 = '<blue><bold>|</bold></blue>' .
+                join("<blue><bold>|</bold></blue>", @$BAHAI_DAY_NAMES) .
+                '<blue><bold>|</bold></blue>';
+
+    my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";
+    $calendar .= '<blue><bold>|</bold></blue>          ';
+
+    map { $calendar .= "           " } (2..($start_index %= 7));
+    foreach (1 .. 19) {
+        $calendar .= sprintf("<blue><bold>|</bold></blue><cyan><bold>%9d </bold></cyan>", $_);
+        if ($_ != 19) {
+            $calendar .= "<blue><bold>|</bold></blue>\n" . $line3 . "\n"
+                unless (($start_index + $_) % 7);
+        }
+        elsif ($_ == 19) {
+            my $x = 7 - (($start_index + $_) % 7);
+            if (($x >= 2) && ($x != 7)) {
+                $calendar .= '<blue><bold>|</bold></blue>          ';
+                map { $calendar .= ' 'x11 } (1..$x-1);
+            }
+        }
+    }
+
+    $calendar = sprintf("%s<blue><bold>|</bold></blue>\n%s\n", $calendar, $line3);
+
+    return Term::ANSIColor::Markup->colorize($calendar);
+}
+
 #
 #
 # PRIVATE METHODS
 
-sub _bahai_to_julian {
-    my ($major, $cycle, $year, $month, $day) = @_;
-
-    my ($g_year) = julian_to_gregorian($BAHAI_EPOCH);
-    my $gy     = (361 * ($major - 1)) +
-                 (19  * ($cycle - 1)) +
-                 ($year - 1) + $g_year;
-
-    return gregorian_to_julian($gy, 3, 20)
-           +
-           (19 * ($month - 1))
-           +
-           (($month != 20) ? 0 : (is_gregorian_leap_year($gy + 1) ? -14 : -15))
-           +
-           $day;
-}
-
 sub _validate_bahai_date {
     my ($year, $month, $day) = @_;
 
-    validate_day($day);
-    validate_month($month);
-    validate_year($year);
+    validate_bahai_day($day);
+    validate_bahai_month($month);
+    validate_bahai_year($year);
 }
 
 =head1 AUTHOR
@@ -283,10 +353,6 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 =head1 REPOSITORY
 
 L<https://github.com/Manwar/Calendar-Bahai>
-
-=head1 ACKNOWLEDGEMENTS
-
-Entire logic is based on the L<code|http://www.fourmilab.ch/documents/calendar> written by John Walker.
 
 =head1 BUGS
 

@@ -1,5 +1,27 @@
 Revision history for Calendar-Bahai
 
+0.13  Fri Apr 17 12:00:00 2015
+      - Cleaned up method Calendar::Bahai::BUILD() and removed duplicate code.
+      - Cleaned up method Calendar::Bahai::current() and removed duplicate code.
+      - Updated pod description of the following methods in the package Calendar::Bahai:
+        - from_gregorian()
+        - from_julian()
+      - Tidied up method Calendar::Bahai::_calendar() and extracted out common code
+        to the get_bahai_month_calendar() in the package Calendar::Bahai::Utils.
+      - Renamed method validate_year() to validate_bahai_year()
+      - Renamed method validate_month() to validate_bahai_month()
+      - Renamed method validate_day() to validate_bahai_day()
+      - Enabled method validate_bahai_month()
+      - Added the following methods to the package Calendar::Bahai::Utils:
+        - bahai_to_gregorian()
+        - bahai_to_julian()
+        - get_bahai_month_calendar()
+      - Updated pod description of the following methods in the package Calendar::Bahai::Utils:
+        - gregorian_to_bahai()
+        - julian_to_bahai()
+        - julian_t0_gregorian()
+        - get_major_cycle_year()
+
 0.12  Thu Apr 16 16:50:00 2015
       - Complete re-write of the entire distribution using Moo with unit tests.
 
