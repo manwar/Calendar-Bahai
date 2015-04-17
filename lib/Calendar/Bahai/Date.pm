@@ -1,6 +1,6 @@
 package Calendar::Bahai::Date;
 
-$Calendar::Bahai::Date::VERSION = '0.13';
+$Calendar::Bahai::Date::VERSION = '0.14';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai::Date - Represents Bahai date.
 
 =head1 VERSION
 
-Version 0.13
+Version 0.14
 
 =cut
 

@@ -1,5 +1,10 @@
 Revision history for Calendar-Bahai
 
+0.14  Fri Apr 17 14:50:00 2015
+      - Made default month as current bahai month.
+      - Documented CONSTRUCTOR in the pod document.
+      - Added more code to the section SYNOPSIS.
+
 0.13  Fri Apr 17 12:00:00 2015
       - Cleaned up method Calendar::Bahai::BUILD() and removed duplicate code.
       - Cleaned up method Calendar::Bahai::current() and removed duplicate code.

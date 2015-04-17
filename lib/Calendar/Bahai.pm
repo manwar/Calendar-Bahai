@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.13';
+$Calendar::Bahai::VERSION = '0.14';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.13
+Version 0.14
 
 =cut
 
@@ -32,12 +32,12 @@ use namespace::clean;
 use overload q{""} => 'as_string', fallback => 1;
 
 has year  => (is => 'rw', isa => $BAHAI_YEAR,  predicate => 1);
-has month => (is => 'rw', isa => $BAHAI_MONTH, predicate => 1, default => sub { 1 });
+has month => (is => 'rw', isa => $BAHAI_MONTH, predicate => 1);
 
 sub BUILD {
     my ($self) = @_;
 
-    unless ($self->has_year) {
+    unless ($self->has_year && $self->has_month) {
         my $date = Calendar::Bahai::Date->new;
         $self->year($date->get_year);
         $self->month($date->month);
@@ -73,15 +73,16 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     use Calendar::Bahai;
 
     # prints current month calendar
+    print Calendar::Bahai->new, "\n";
     print Calendar::Bahai->new->current, "\n";
 
     # prints calendar for the first month of year 172 (bahai calendar)
-    print Calendar::Bahai->new({ month => 1, year => 172 })->as_string, "\n";
+    print Calendar::Bahai->new({ month => 1, year => 172 }), "\n";
 
-    # prints calendar month where theequivalent of the first month of year 2015 (gregorian calendar)
+    # prints bahai month calendar in which the given gregorian date falls in.
     print Calendar::Bahai->new->from_gregorian(2015, 1, 14), "\n";
 
-    # prints calendar equivalent of the given julian date.
+    # prints bahai month calendar in which the given julian date falls in.
     print Calendar::Bahai->new->from_julian(2457102.5), "\n";
 
 =head1 BAHAI MONTHS
@@ -171,6 +172,20 @@ celebrated on two consecutive days in the Autumn.The changes take effect from th
 next Bahai New Year, from sunset on March 20, 2015. The definitive tables showing
 the new dates have not yet been released (as of September 24, 2014), but there is
 a preliminary discussion L<here|http://senmcglinn.wordpress.com/2014/09/22/changes-in-bahai-calendar-what-how-why>.
+
+=head1 CONSTRUCTOR
+
+It expects month and year  optionally. By default it gets current Bahai month and
+year.
+
+    use strict; use warnings;
+    use Calendar::Bahai;
+
+    # prints current month calendar
+    print Calendar::Bahai->new, "\n";
+
+    # prints calendar for the first month of year 172 BE.
+    print Calendar::Bahai->new({ month => 1, year => 172 }), "\n";
 
 =head1 METHODS
 

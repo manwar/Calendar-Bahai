@@ -1,6 +1,6 @@
 package Calendar::Bahai::Utils;
 
-$Calendar::Bahai::Utils::VERSION = '0.13';
+$Calendar::Bahai::Utils::VERSION = '0.14';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai::Utils - Helper package for Calendar::Bahai.
 
 =head1 VERSION
 
-Version 0.13
+Version 0.14
 
 =head1 DESCRIPTION
 
