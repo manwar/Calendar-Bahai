@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.14';
+$Calendar::Bahai::VERSION = '0.15';
 
 =head1 NAME
 
@@ -8,15 +8,15 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.14
+Version 0.15
 
 =cut
 
 use 5.006;
 use Data::Dumper;
 
-use Calendar::Bahai::Date;
-use Calendar::Bahai::Utils qw(
+use Date::Bahai;
+use Date::Utils qw(
     $BAHAI_YEAR
     $BAHAI_MONTH
 
@@ -38,7 +38,7 @@ sub BUILD {
     my ($self) = @_;
 
     unless ($self->has_year && $self->has_month) {
-        my $date = Calendar::Bahai::Date->new;
+        my $date = Date::Bahai->new;
         $self->year($date->get_year);
         $self->month($date->month);
     }
@@ -203,7 +203,7 @@ Returns current month of the Bahai calendar.
 sub current {
     my ($self) = @_;
 
-    my $date = Calendar::Bahai::Date->new;
+    my $date = Date::Bahai->new;
     return _calendar($date->get_year, $date->month);
 }
 
@@ -261,7 +261,7 @@ sub as_string {
 sub _date {
     my ($major, $cycle, $year, $month, $day) = @_;
 
-    return Calendar::Bahai::Date->new({
+    return Date::Bahai->new({
         major => $major,
         cycle => $cycle,
         year  => $year,

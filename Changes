@@ -1,5 +1,9 @@
 Revision history for Calendar-Bahai
 
+0.15  Fri Apr 17 16:00:00 2015
+      - Restructured the distribution to make use of new packages Date::Utils
+        and Date::Bahai.
+
 0.14  Fri Apr 17 14:50:00 2015
       - Made default month as current bahai month.
       - Documented CONSTRUCTOR in the pod document.

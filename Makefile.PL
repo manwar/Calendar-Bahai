@@ -22,8 +22,8 @@ WriteMakefile(
     PREREQ_PM => {
         'Moo'              => 0,
         'namespace::clean' => 0,
-        'Time::localtime'  => 1.02,
-        'Term::ANSIColor::Markup' => '0.06',
+        'Date::Utils'      => 0,
+        'Date::Bahai'      => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Calendar-Bahai-*' },

@@ -5,11 +5,7 @@ MANIFEST.SKIP
 Makefile.PL
 README
 lib/Calendar/Bahai.pm
-lib/Calendar/Bahai/Date.pm
-lib/Calendar/Bahai/Utils.pm
 t/00-load.t
 t/01-calendar-bahai.t
-t/02-calendar-bahai-utils.t
-t/03-calendar-bahai-date.t
 t/manifest.t
 t/pod.t
