@@ -1,5 +1,9 @@
 Revision history for Calendar-Bahai
 
+0.16  Sat Apr 18 02:20:00 2015
+      - Removed Date::Bahai and replaced with Date::Bahai::Simple.
+      - Moved calendar generation code out of Date::Utils.
+
 0.15  Fri Apr 17 16:00:00 2015
       - Restructured the distribution to make use of new packages Date::Utils
         and Date::Bahai.

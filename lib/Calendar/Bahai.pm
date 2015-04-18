@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.15';
+$Calendar::Bahai::VERSION = '0.16';
 
 =head1 NAME
 
@@ -8,19 +8,21 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.15
+Version 0.16
 
 =cut
 
 use 5.006;
 use Data::Dumper;
 
-use Date::Bahai;
+use Term::ANSIColor::Markup;
+use Date::Bahai::Simple;
 use Date::Utils qw(
     $BAHAI_YEAR
     $BAHAI_MONTH
+    $BAHAI_DAYS
+    $BAHAI_MONTHS
 
-    get_bahai_month_calendar
     get_major_cycle_year
     gregorian_to_julian
     julian_to_bahai
@@ -38,7 +40,7 @@ sub BUILD {
     my ($self) = @_;
 
     unless ($self->has_year && $self->has_month) {
-        my $date = Date::Bahai->new;
+        my $date = Date::Bahai::Simple->new;
         $self->year($date->get_year);
         $self->month($date->month);
     }
@@ -116,7 +118,7 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
 
     +-------------+--------------+----------------------------------------------+
     | Arabic Name | English Name | Day of the Week                              |
-    +-------------+---------------------+---------------------------------------+
+    +-------------+--------------+----------------------------------------------+
     | Jamal       | Beauty       | Sunday                                       |
     | Kamal       | Perfection   | Monday                                       |
     | Fidal       | Grace        | Tuesday                                      |
@@ -203,7 +205,7 @@ Returns current month of the Bahai calendar.
 sub current {
     my ($self) = @_;
 
-    my $date = Date::Bahai->new;
+    my $date = Date::Bahai::Simple->new;
     return _calendar($date->get_year, $date->month);
 }
 
@@ -261,7 +263,7 @@ sub as_string {
 sub _date {
     my ($major, $cycle, $year, $month, $day) = @_;
 
-    return Date::Bahai->new({
+    return Date::Bahai::Simple->new({
         major => $major,
         cycle => $cycle,
         year  => $year,
@@ -276,7 +278,44 @@ sub _calendar {
     my $date = _date($major, $cycle, $y, $month, 1);
     my $start_index = $date->day_of_week;
 
-    return get_bahai_month_calendar($year, $month, $start_index);
+    my $line1 = '<blue><bold>+' . ('-')x76 . '+</bold></blue>';
+    my $line2 = '<blue><bold>|</bold></blue>' .
+                (' ')x29 . '<yellow><bold>' .
+                sprintf("%-9s [%3d BE]", $BAHAI_MONTHS->[$month], $year) .
+                '</bold></yellow>' . (' ')x29 . '<blue><bold>|</bold></blue>';
+    my $line3 = '<blue><bold>+';
+
+    for(1..7) {
+        $line3 .= ('-')x(10) . '+';
+    }
+    $line3 .= '</bold></blue>';
+
+    my $line4 = '<blue><bold>|</bold></blue>' .
+                join("<blue><bold>|</bold></blue>", @$BAHAI_DAYS) .
+                '<blue><bold>|</bold></blue>';
+
+    my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";
+    $calendar .= '<blue><bold>|</bold></blue>          ';
+
+    map { $calendar .= "           " } (2..($start_index %= 7));
+    foreach (1 .. 19) {
+        $calendar .= sprintf("<blue><bold>|</bold></blue><cyan><bold>%9d </bold></cyan>", $_);
+        if ($_ != 19) {
+            $calendar .= "<blue><bold>|</bold></blue>\n" . $line3 . "\n"
+                unless (($start_index + $_) % 7);
+        }
+        elsif ($_ == 19) {
+            my $x = 7 - (($start_index + $_) % 7);
+            if (($x >= 2) && ($x != 7)) {
+                $calendar .= '<blue><bold>|</bold></blue>          ';
+                map { $calendar .= ' 'x11 } (1..$x-1);
+            }
+        }
+    }
+
+    $calendar = sprintf("%s<blue><bold>|</bold></blue>\n%s\n", $calendar, $line3);
+
+    return Term::ANSIColor::Markup->colorize($calendar);
 }
 
 =head1 AUTHOR
