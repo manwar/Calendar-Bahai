@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.16';
+$Calendar::Bahai::VERSION = '0.17';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.16
+Version 0.17
 
 =cut
 
@@ -295,9 +295,10 @@ sub _calendar {
                 '<blue><bold>|</bold></blue>';
 
     my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";
-    $calendar .= '<blue><bold>|</bold></blue>          ';
-
-    map { $calendar .= "           " } (2..($start_index %= 7));
+    if ($start_index % 7 != 0) {
+        $calendar .= '<blue><bold>|</bold></blue>          ';
+        map { $calendar .= "           " } (2..($start_index %= 7));
+    }
     foreach (1 .. 19) {
         $calendar .= sprintf("<blue><bold>|</bold></blue><cyan><bold>%9d </bold></cyan>", $_);
         if ($_ != 19) {
@@ -325,10 +326,6 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 =head1 REPOSITORY
 
 L<https://github.com/Manwar/Calendar-Bahai>
-
-=head1 ACKNOWLEDGEMENTS
-
-Entire logic is based on the L<code|http://www.fourmilab.ch/documents/calendar> written by John Walker.
 
 =head1 BUGS
 
