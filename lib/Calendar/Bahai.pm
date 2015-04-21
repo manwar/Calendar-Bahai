@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.17';
+$Calendar::Bahai::VERSION = '0.18';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.17
+Version 0.18
 
 =cut
 
@@ -285,7 +285,7 @@ sub _calendar {
                 '</bold></yellow>' . (' ')x29 . '<blue><bold>|</bold></blue>';
     my $line3 = '<blue><bold>+';
 
-    for(1..7) {
+    foreach (1..7) {
         $line3 .= ('-')x(10) . '+';
     }
     $line3 .= '</bold></blue>';
@@ -307,8 +307,8 @@ sub _calendar {
         }
         elsif ($_ == 19) {
             my $x = 7 - (($start_index + $_) % 7);
+            $calendar .= '<blue><bold>|</bold></blue>          ';
             if (($x >= 2) && ($x != 7)) {
-                $calendar .= '<blue><bold>|</bold></blue>          ';
                 map { $calendar .= ' 'x11 } (1..$x-1);
             }
         }

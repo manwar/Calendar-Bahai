@@ -1,5 +1,8 @@
 Revision history for Calendar-Bahai
 
+0.18  Tue Apr 21 13:45:00 2015
+      - Fixed the bug in the method _calendar() the last cell is empty.
+
 0.17  Sun Apr 19 02:45:00 2015
       - Fixed the bug in the method _calendar() when the first day of the month is Sunday.
 
