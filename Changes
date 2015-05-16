@@ -1,5 +1,8 @@
 Revision history for Calendar-Bahai
 
+0.20  Sun May 17 00:50:00 2015
+      - Upgraded to use Date::Utils::Bahai v0.02.
+
 0.19  Thu Apr 23 23:35:00 2015
       - Re-structured and consumed Date::Utils::Bahai as Moo Role.
 

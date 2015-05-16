@@ -22,7 +22,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Moo'                     => 0,
         'namespace::clean'        => 0,
-        'Date::Utils::Bahai'      => 0,
+        'Date::Utils::Bahai'      => '0.02',
         'Date::Bahai::Simple'     => '0.02',
         'Term::ANSIColor::Markup' => '0.06',
     },
