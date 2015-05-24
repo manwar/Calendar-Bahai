@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.20';
+$Calendar::Bahai::VERSION = '0.21';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.20
+Version 0.21
 
 =cut
 
@@ -25,19 +25,17 @@ use overload q{""} => 'as_string', fallback => 1;
 
 has year  => (is => 'rw', predicate => 1);
 has month => (is => 'rw', predicate => 1);
-
-with 'Date::Utils::Bahai';
+has date  => (is => 'ro', default   => sub { Date::Bahai::Simple->new });
 
 sub BUILD {
     my ($self) = @_;
 
-    $self->validate_year($self->year)   if $self->has_year;
-    $self->validate_month($self->month) if $self->has_month;
+    $self->date->validate_month($self->month) if $self->has_month;
+    $self->date->validate_year($self->year)   if $self->has_year;
 
     unless ($self->has_year && $self->has_month) {
-        my $date = Date::Bahai::Simple->new;
-        $self->year($date->get_year);
-        $self->month($date->month);
+        $self->year($self->date->get_year);
+        $self->month($self->date->month);
     }
 }
 
@@ -200,8 +198,7 @@ Returns current month of the Bahai calendar.
 sub current {
     my ($self) = @_;
 
-    my $date = Date::Bahai::Simple->new;
-    return $self->_calendar($date->get_year, $date->month);
+    return $self->_calendar($self->date->get_year, $self->date->month);
 }
 
 =head2 from_gregorian($year, $month, $day)
@@ -269,14 +266,14 @@ sub _date {
 sub _calendar {
     my ($self, $year, $month) = @_;
 
-    my ($major, $cycle, $y) = $self->get_major_cycle_year($year - 1);
+    my ($major, $cycle, $y) = $self->date->get_major_cycle_year($year - 1);
     my $date = _date($major, $cycle, $y, $month, 1);
     my $start_index = $date->day_of_week;
 
     my $line1 = '<blue><bold>+' . ('-')x76 . '+</bold></blue>';
     my $line2 = '<blue><bold>|</bold></blue>' .
                 (' ')x29 . '<yellow><bold>' .
-                sprintf("%-9s [%3d BE]", $self->bahai_months->[$month], $year) .
+                sprintf("%-9s [%3d BE]", $self->date->bahai_months->[$month], $year) .
                 '</bold></yellow>' . (' ')x29 . '<blue><bold>|</bold></blue>';
     my $line3 = '<blue><bold>+';
 
@@ -286,7 +283,7 @@ sub _calendar {
     $line3 .= '</bold></blue>';
 
     my $line4 = '<blue><bold>|</bold></blue>' .
-                join("<blue><bold>|</bold></blue>", @{$self->bahai_days}) .
+                join("<blue><bold>|</bold></blue>", @{$self->date->bahai_days}) .
                 '<blue><bold>|</bold></blue>';
 
     my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";

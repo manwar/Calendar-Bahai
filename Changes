@@ -1,5 +1,9 @@
 Revision history for Calendar-Bahai
 
+0.21  Sun May 24 22:00:00 2015
+      - Removed the dependency on Date::Utils::Bahai.
+      - Upgraded to use Date::Bahai::Simple v0.04 to fix RT: 103403.
+
 0.20  Sun May 17 00:50:00 2015
       - Upgraded to use Date::Utils::Bahai v0.02.
 
