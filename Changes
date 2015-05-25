@@ -1,5 +1,13 @@
 Revision history for Calendar-Bahai
 
+0.22  Mon May 25 02:05:00 2015
+      - Fine tuned method from_gregorian().
+      - Fine tuned method from_julian().
+      - Dropped un-used method _date().
+      - Updated method _calendar() w.r.t the dropped method _date().
+      - Removed the code from the pod document for method current().
+      - Removed the code from the pod document for method from_gregorian().
+
 0.21  Sun May 24 22:00:00 2015
       - Removed the dependency on Date::Utils::Bahai.
       - Upgraded to use Date::Bahai::Simple v0.04 to fix RT: 103403.

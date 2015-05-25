@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.21';
+$Calendar::Bahai::VERSION = '0.22';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.21
+Version 0.22
 
 =cut
 
@@ -71,7 +71,7 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     print Calendar::Bahai->new, "\n";
     print Calendar::Bahai->new->current, "\n";
 
-    # prints calendar for the first month of year 172 (bahai calendar)
+    # prints bahai month calendar for the first month of year 172.
     print Calendar::Bahai->new({ month => 1, year => 172 }), "\n";
 
     # prints bahai month calendar in which the given gregorian date falls in.
@@ -173,25 +173,11 @@ a preliminary discussion L<here|http://senmcglinn.wordpress.com/2014/09/22/chang
 It expects month and year  optionally. By default it gets current Bahai month and
 year.
 
-    use strict; use warnings;
-    use Calendar::Bahai;
-
-    # prints current month calendar
-    print Calendar::Bahai->new, "\n";
-
-    # prints calendar for the first month of year 172 BE.
-    print Calendar::Bahai->new({ month => 1, year => 172 }), "\n";
-
 =head1 METHODS
 
 =head2 current()
 
 Returns current month of the Bahai calendar.
-
-    use strict; use warnings;
-    use Calendar::Bahai;
-
-    print Calendar::Bahai->new->current, "\n";
 
 =cut
 
@@ -205,20 +191,13 @@ sub current {
 
 Returns bahai month calendar in which the given gregorian date falls in.
 
-    use strict; use warnings;
-    use Calendar::Bahai;
-
-    print Calendar::Bahai->new->from_gregorian(2014, 4, 13), "\n";
-
 =cut
 
 sub from_gregorian {
     my ($self, $year, $month, $day) = @_;
 
     my $julian_date = $self->gregorian_to_julian($year, $month, $day);
-    my ($major, $cycle, $y, $m, $d) = $self->julian_to_bahai($julian_date);
-    my $date = _date($major, $cycle, $y, $m, $d);
-
+    my $date = $self->date->from_julian($julian_date);
     return $self->_calendar($date->get_year, $date->month);
 }
 
@@ -226,19 +205,12 @@ sub from_gregorian {
 
 Returns bahai month calendar in which the given julian date falls in.
 
-    use strict; use warnings;
-    use Calendar::Bahai;
-
-    print Calendar::Bahai->new->from_julian(2457102.5), "\n";
-
 =cut
 
 sub from_julian {
-    my ($self, $julian) = @_;
+    my ($self, $julian_date) = @_;
 
-    my ($major, $cycle, $year, $month, $day) = $self->julian_to_bahai($julian);
-    my $date = _date($major, $cycle, $year, $month, $day);
-
+    my $date = $self->date->from_julian($julian_date);
     return $self->_calendar($date->get_year, $date->month);
 }
 
@@ -252,22 +224,12 @@ sub as_string {
 #
 # PRIVATE METHODS
 
-sub _date {
-    my ($major, $cycle, $year, $month, $day) = @_;
-
-    return Date::Bahai::Simple->new({
-        major => $major,
-        cycle => $cycle,
-        year  => $year,
-        month => $month,
-        day   => $day });
-}
-
 sub _calendar {
     my ($self, $year, $month) = @_;
 
     my ($major, $cycle, $y) = $self->date->get_major_cycle_year($year - 1);
-    my $date = _date($major, $cycle, $y, $month, 1);
+    my $date = Date::Bahai::Simple->new({
+        major => $major, cycle => $cycle, year => $y, month => $month, day => 1 });
     my $start_index = $date->day_of_week;
 
     my $line1 = '<blue><bold>+' . ('-')x76 . '+</bold></blue>';
