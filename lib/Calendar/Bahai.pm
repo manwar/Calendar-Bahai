@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.22';
+$Calendar::Bahai::VERSION = '0.23';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.22
+Version 0.23
 
 =cut
 
@@ -226,6 +226,9 @@ sub as_string {
 
 sub _calendar {
     my ($self, $year, $month) = @_;
+
+    $self->date->validate_month($month);
+    $self->date->validate_year($year);
 
     my ($major, $cycle, $y) = $self->date->get_major_cycle_year($year - 1);
     my $date = Date::Bahai::Simple->new({

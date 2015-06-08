@@ -1,5 +1,8 @@
 Revision history for Calendar-Bahai
 
+0.23  Mon Jun 08 11:40:00 2015
+      - Updated method _calendar() to validates month and year.
+
 0.22  Mon May 25 02:05:00 2015
       - Fine tuned method from_gregorian().
       - Fine tuned method from_julian().
