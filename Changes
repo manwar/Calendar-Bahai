@@ -1,5 +1,8 @@
 Revision history for Calendar-Bahai
 
+0.24  Wed Jun 17 18:15:00 2015
+      - Fixed the bug in the method from_gregorian().
+
 0.23  Mon Jun 08 11:40:00 2015
       - Updated method _calendar() to validates month and year.
 

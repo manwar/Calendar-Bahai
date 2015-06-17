@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.23';
+$Calendar::Bahai::VERSION = '0.24';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.23
+Version 0.24
 
 =cut
 
@@ -196,9 +196,7 @@ Returns bahai month calendar in which the given gregorian date falls in.
 sub from_gregorian {
     my ($self, $year, $month, $day) = @_;
 
-    my $julian_date = $self->gregorian_to_julian($year, $month, $day);
-    my $date = $self->date->from_julian($julian_date);
-    return $self->_calendar($date->get_year, $date->month);
+    return $self->from_julian($self->date->gregorian_to_julian($year, $month, $day));
 }
 
 =head2 from_julian($julian_date)
