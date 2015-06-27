@@ -1,5 +1,8 @@
 Revision history for Calendar-Bahai
 
+0.25  Sat Jun 27 16:40:00 2015
+      - Upgraded to use Date::Bahai::Simple v0.08.
+
 0.24  Wed Jun 17 18:15:00 2015
       - Fixed the bug in the method from_gregorian().
 

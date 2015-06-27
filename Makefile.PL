@@ -20,9 +20,9 @@ WriteMakefile(
         'Test::More' => 0,
     },
     PREREQ_PM => {
-        'Moo'                     => 0,
-        'namespace::clean'        => 0,
-        'Date::Bahai::Simple'     => '0.04',
+        'Moo'                     => '2.000000',
+        'namespace::clean'        => '0.24',
+        'Date::Bahai::Simple'     => '0.08',
         'Term::ANSIColor::Markup' => '0.06',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
