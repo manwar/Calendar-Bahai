@@ -1,5 +1,8 @@
 Revision history for Calendar-Bahai
 
+0.26  Tue Jul 07 10:10:00 2015
+      - Upgraded to use Date::Bahai::Simple v0.09.
+
 0.25  Sat Jun 27 16:40:00 2015
       - Upgraded to use Date::Bahai::Simple v0.08.
 
