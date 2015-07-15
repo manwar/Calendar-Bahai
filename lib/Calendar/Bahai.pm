@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.26';
+$Calendar::Bahai::VERSION = '0.27';
 
 =head1 NAME
 
@@ -8,16 +8,14 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.26
+Version 0.27
 
 =cut
 
 use 5.006;
 use Data::Dumper;
 
-use Term::ANSIColor::Markup;
 use Date::Bahai::Simple;
-
 use Moo;
 use namespace::clean;
 
@@ -184,7 +182,7 @@ Returns current month of the Bahai calendar.
 sub current {
     my ($self) = @_;
 
-    return $self->_calendar($self->date->get_year, $self->date->month);
+    return $self->date->get_calendar($self->date->month, $self->date->get_year);
 }
 
 =head2 from_gregorian($year, $month, $day)
@@ -209,69 +207,13 @@ sub from_julian {
     my ($self, $julian_date) = @_;
 
     my $date = $self->date->from_julian($julian_date);
-    return $self->_calendar($date->get_year, $date->month);
+    return $self->date->get_calendar($date->month, $date->get_year);
 }
 
 sub as_string {
     my ($self) = @_;
 
-    return $self->_calendar($self->year, $self->month);
-}
-
-#
-#
-# PRIVATE METHODS
-
-sub _calendar {
-    my ($self, $year, $month) = @_;
-
-    $self->date->validate_month($month);
-    $self->date->validate_year($year);
-
-    my ($major, $cycle, $y) = $self->date->get_major_cycle_year($year - 1);
-    my $date = Date::Bahai::Simple->new({
-        major => $major, cycle => $cycle, year => $y, month => $month, day => 1 });
-    my $start_index = $date->day_of_week;
-
-    my $line1 = '<blue><bold>+' . ('-')x76 . '+</bold></blue>';
-    my $line2 = '<blue><bold>|</bold></blue>' .
-                (' ')x29 . '<yellow><bold>' .
-                sprintf("%-9s [%3d BE]", $self->date->bahai_months->[$month], $year) .
-                '</bold></yellow>' . (' ')x29 . '<blue><bold>|</bold></blue>';
-    my $line3 = '<blue><bold>+';
-
-    foreach (1..7) {
-        $line3 .= ('-')x(10) . '+';
-    }
-    $line3 .= '</bold></blue>';
-
-    my $line4 = '<blue><bold>|</bold></blue>' .
-                join("<blue><bold>|</bold></blue>", @{$self->date->bahai_days}) .
-                '<blue><bold>|</bold></blue>';
-
-    my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";
-    if ($start_index % 7 != 0) {
-        $calendar .= '<blue><bold>|</bold></blue>          ';
-        map { $calendar .= "           " } (2..($start_index %= 7));
-    }
-    foreach (1 .. 19) {
-        $calendar .= sprintf("<blue><bold>|</bold></blue><cyan><bold>%9d </bold></cyan>", $_);
-        if ($_ != 19) {
-            $calendar .= "<blue><bold>|</bold></blue>\n" . $line3 . "\n"
-                unless (($start_index + $_) % 7);
-        }
-        elsif ($_ == 19) {
-            my $x = 7 - (($start_index + $_) % 7);
-            $calendar .= '<blue><bold>|</bold></blue>          ';
-            if (($x >= 2) && ($x != 7)) {
-                map { $calendar .= ' 'x11 } (1..$x-1);
-            }
-        }
-    }
-
-    $calendar = sprintf("%s<blue><bold>|</bold></blue>\n%s\n", $calendar, $line3);
-
-    return Term::ANSIColor::Markup->colorize($calendar);
+    return $self->date->get_calendar($self->month, $self->year);
 }
 
 =head1 AUTHOR
