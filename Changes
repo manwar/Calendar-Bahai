@@ -1,5 +1,8 @@
 Revision history for Calendar-Bahai
 
+0.28  Fri Aug 28 10:45:00 2015
+      - Upgraded to use Date::Bahai::Simple v0.11.
+
 0.27  Wed Jul 15 10:05:00 2015
       - Upgraded to use Date::Bahai::Simple v0.10.
       - Making use of the method get_calendar() provided by Date::Bahai::Simple.
