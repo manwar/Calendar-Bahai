@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.30';
+$Calendar::Bahai::VERSION = '0.31';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.30
+Version 0.31
 
 =cut
 
@@ -229,7 +229,7 @@ sub from_julian {
 
 Returns calendar for the given C<$month> and C<$year> rendered  in SVG format. If
 C<$month> and C<$year> missing, it would return current calendar month.The Plugin
-L>Calendar::Plugin::Renderer> must be installed for this to work.
+L<Calendar::Plugin::Renderer> must be installed for this to work.
 
 =cut
 
