@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION = '0.28';
+$Calendar::Bahai::VERSION = '0.29';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.28
+Version 0.29
 
 =cut
 
@@ -19,11 +19,15 @@ use Date::Bahai::Simple;
 use Moo;
 use namespace::clean;
 
+use Role::Tiny qw();
+use Module::Pluggable search_path => ['Calendar::Plugin'], require => 1, max_depth => 3;
+
 use overload q{""} => 'as_string', fallback => 1;
 
-has year  => (is => 'rw', predicate => 1);
-has month => (is => 'rw', predicate => 1);
-has date  => (is => 'ro', default   => sub { Date::Bahai::Simple->new });
+has year    => (is => 'rw', predicate => 1);
+has month   => (is => 'rw', predicate => 1);
+has date    => (is => 'ro', default   => sub { Date::Bahai::Simple->new });
+has _plugin => (is => 'rw', default   => sub { 0 });
 
 sub BUILD {
     my ($self) = @_;
@@ -34,6 +38,13 @@ sub BUILD {
     unless ($self->has_year && $self->has_month) {
         $self->year($self->date->get_year);
         $self->month($self->date->month);
+    }
+
+    my $plugins = [ Calendar::Bahai::plugins ];
+    foreach (@{$plugins}) {
+        next unless ($_ eq 'Calendar::Plugin::Renderer');
+        Role::Tiny->apply_roles_to_object($self, $_);
+        $self->_plugin(1);
     }
 }
 
@@ -65,7 +76,7 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     use strict; use warnings;
     use Calendar::Bahai;
 
-    # prints current month calendar
+    # prints current month bahai calendar
     print Calendar::Bahai->new, "\n";
     print Calendar::Bahai->new->current, "\n";
 
@@ -77,6 +88,10 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
 
     # prints bahai month calendar in which the given julian date falls in.
     print Calendar::Bahai->new->from_julian(2457102.5), "\n";
+
+    # prints current month bahai calendar in SVG format if the plugin
+    # Calendar::Plugin::Renderer is installed.
+    print Calendar::Bahai->new->as_svg;
 
 =head1 BAHAI MONTHS
 
@@ -208,6 +223,44 @@ sub from_julian {
 
     my $date = $self->date->from_julian($julian_date);
     return $self->date->get_calendar($date->month, $date->get_year);
+}
+
+=head2 as_svg($month, $year)
+
+Returns calendar for the given C<$month> and C<$year> rendered  in SVG format. If
+C<$month> and C<$year> missing, it would return current calendar month.
+
+=cut
+
+sub as_svg {
+    my ($self, $month, $year) = @_;
+
+    die "ERROR: Plugin Calendar::Plugin::Renderer is missing, please install it first.\n"
+        unless ($self->_plugin);
+
+    if (defined $month && defined $year) {
+        $self->date->validate_month($month);
+        $self->date->validate_year($year);
+    }
+    else {
+        $month = $self->month;
+        $year  = $self->year;
+    }
+
+    my ($major, $cycle, $y) = $self->date->get_major_cycle_year($year - 1);
+    my $date = Date::Bahai::Simple->new({
+        major => $major,
+        cycle => $cycle,
+        year  => $y,
+        month => $month,
+        day   => 1 });
+
+    return $self->svg_calendar({
+        adjust_height => 21,
+        start_index   => $date->day_of_week + 1,
+        month_name    => $date->bahai_months->[$month],
+        days          => 19,
+        year          => $year });
 }
 
 sub as_string {

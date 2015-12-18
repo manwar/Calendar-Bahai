@@ -1,5 +1,8 @@
 Revision history for Calendar-Bahai
 
+0.29  Fri Dec 18 20:35:00 2015
+      - Added method as_svg() using the plugin Calendar::Plugin::Renderer.
+
 0.28  Fri Aug 28 10:45:00 2015
       - Upgraded to use Date::Bahai::Simple v0.11.
 
