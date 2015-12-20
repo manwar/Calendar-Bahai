@@ -1,5 +1,8 @@
 Revision history for Calendar-Bahai
 
+0.32  Sun Dec 20 15:20:00 2015
+      - Added missing prereqs Module::Pluggable as reported by CPAN Testers.
+
 0.31  Fri Dec 18 21:00:00 2015
       - Fixed typo in the pod document.
 

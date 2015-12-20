@@ -11,7 +11,6 @@ WriteMakefile(
     VERSION_FROM       => 'lib/Calendar/Bahai.pm',
     ABSTRACT_FROM      => 'lib/Calendar/Bahai.pm',
     LICENSE            => 'artistic_2',
-    PL_FILES           => {},
     MIN_PERL_VERSION   => 5.006,
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
@@ -23,6 +22,7 @@ WriteMakefile(
         'Moo'                 => '2.000000',
         'namespace::clean'    => '0.24',
         'Date::Bahai::Simple' => '0.11',
+        'Module::Pluggable'   => '5.1',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Calendar-Bahai-*' },
