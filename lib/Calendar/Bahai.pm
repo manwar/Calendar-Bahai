@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION   = '0.32';
+$Calendar::Bahai::VERSION   = '0.33';
 $Calendar::Bahai::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.32
+Version 0.33
 
 =cut
 
@@ -91,7 +91,7 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     print Calendar::Bahai->new->from_julian(2457102.5), "\n";
 
     # prints current month bahai calendar in SVG format if the plugin
-    # Calendar::Plugin::Renderer is installed.
+    # Calendar::Plugin::Renderer v0.04 or above is installed.
     print Calendar::Bahai->new->as_svg;
 
 =head1 BAHAI MONTHS
@@ -230,15 +230,15 @@ sub from_julian {
 
 Returns calendar for the given C<$month> and C<$year> rendered  in SVG format. If
 C<$month> and C<$year> missing, it would return current calendar month.The Plugin
-L<Calendar::Plugin::Renderer> must be installed for this to work.
+L<Calendar::Plugin::Renderer> v0.04 or above must be installed for this to work.
 
 =cut
 
 sub as_svg {
     my ($self, $month, $year) = @_;
 
-    die "ERROR: Plugin Calendar::Plugin::Renderer is missing, please install it first.\n"
-        unless ($self->_plugin);
+    die "ERROR: Plugin Calendar::Plugin::Renderer v0.04 or above is missing,".
+        "please install it first.\n" unless ($self->_plugin);
 
     if (defined $month && defined $year) {
         $self->date->validate_month($month);
@@ -277,7 +277,7 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
 =head1 REPOSITORY
 
-L<https://github.com/Manwar/Calendar-Bahai>
+L<https://github.com/manwar/Calendar-Bahai>
 
 =head1 BUGS
 
