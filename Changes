@@ -1,4 +1,12 @@
-Revision history for Calendar-Bahai
+Revision history for Calendar::Bahai
+
+0.34  Fri May 13 11:40:00 2016
+      - Updated dependency on Date::Bahai::Simple v0.13.
+      - Tidied up method current() and method from_gregorian().
+      - Updated method as_svg() to make use of method get_month_number() and method get_month_name().
+      - Updated pod document with regard to the Calendar::Plugin::Renderer v0.06.
+      - Added section "SEE ALSO".
+      - Updated copyright year information.
 
 0.33  Sat Jan 09 02:30:00 2016
       - Updated pod document with regard to the Calendar::Plugin::Renderer v0.04.

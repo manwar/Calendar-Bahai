@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION   = '0.33';
+$Calendar::Bahai::VERSION   = '0.34';
 $Calendar::Bahai::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.33
+Version 0.34
 
 =cut
 
@@ -91,7 +91,7 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     print Calendar::Bahai->new->from_julian(2457102.5), "\n";
 
     # prints current month bahai calendar in SVG format if the plugin
-    # Calendar::Plugin::Renderer v0.04 or above is installed.
+    # Calendar::Plugin::Renderer v0.06 or above is installed.
     print Calendar::Bahai->new->as_svg;
 
 =head1 BAHAI MONTHS
@@ -198,7 +198,7 @@ Returns current month of the Bahai calendar.
 sub current {
     my ($self) = @_;
 
-    return $self->date->get_calendar($self->date->month, $self->date->get_year);
+    return $self->date->get_calendar;
 }
 
 =head2 from_gregorian($year, $month, $day)
@@ -223,26 +223,32 @@ sub from_julian {
     my ($self, $julian_date) = @_;
 
     my $date = $self->date->from_julian($julian_date);
-    return $self->date->get_calendar($date->month, $date->get_year);
+    return $date->get_calendar;
 }
 
 =head2 as_svg($month, $year)
 
 Returns calendar for the given C<$month> and C<$year> rendered  in SVG format. If
 C<$month> and C<$year> missing, it would return current calendar month.The Plugin
-L<Calendar::Plugin::Renderer> v0.04 or above must be installed for this to work.
+L<Calendar::Plugin::Renderer> v0.06 or above must be installed for this to work.
+
+C<$month> can be a number between 1 and 19 or a valid Bahai month name.
 
 =cut
 
 sub as_svg {
     my ($self, $month, $year) = @_;
 
-    die "ERROR: Plugin Calendar::Plugin::Renderer v0.04 or above is missing,".
+    die "ERROR: Plugin Calendar::Plugin::Renderer v0.06 or above is missing,".
         "please install it first.\n" unless ($self->_plugin);
 
     if (defined $month && defined $year) {
         $self->date->validate_month($month);
         $self->date->validate_year($year);
+
+        if ($month =~ /^[A-Z]+$/i) {
+            $month = $self->date->get_month_number($month);
+        }
     }
     else {
         $month = $self->month;
@@ -260,7 +266,7 @@ sub as_svg {
     return $self->svg_calendar({
         adjust_height => 21,
         start_index   => $date->day_of_week + 1,
-        month_name    => $date->bahai_months->[$month],
+        month_name    => $date->get_month_name,
         days          => 19,
         year          => $year });
 }
@@ -278,6 +284,20 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 =head1 REPOSITORY
 
 L<https://github.com/manwar/Calendar-Bahai>
+
+=head1 SEE ALSO
+
+=over 4
+
+=item L<Calendar::Gregorian>
+
+=item L<Calendar::Hijri>
+
+=item L<Calendar::Persian>
+
+=item L<Calendar::Saka>
+
+=back
 
 =head1 BUGS
 
@@ -316,7 +336,7 @@ L<http://search.cpan.org/dist/Calendar-Bahai/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2011 - 2015 Mohammad S Anwar.
+Copyright (C) 2011 - 2016 Mohammad S Anwar.
 
 This program  is  free software; you can redistribute it and / or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a  copy of the full

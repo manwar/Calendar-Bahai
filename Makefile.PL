@@ -21,7 +21,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Moo'                 => '2.000000',
         'namespace::clean'    => '0.24',
-        'Date::Bahai::Simple' => '0.11',
+        'Date::Bahai::Simple' => '0.13',
         'Module::Pluggable'   => '5.1',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
