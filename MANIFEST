@@ -9,3 +9,5 @@ t/00-load.t
 t/calendar-bahai.t
 t/manifest.t
 t/pod.t
+t/bahai.xml
+t/fake-bahai.xml

@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION   = '0.34';
+$Calendar::Bahai::VERSION   = '0.35';
 $Calendar::Bahai::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.34
+Version 0.35
 
 =cut
 
@@ -19,16 +19,13 @@ use Data::Dumper;
 use Date::Bahai::Simple;
 use Moo;
 use namespace::clean;
-
-use Role::Tiny qw();
-use Module::Pluggable search_path => ['Calendar::Plugin'], require => 1, max_depth => 3;
+with 'Calendar::Plugin::Renderer';
 
 use overload q{""} => 'as_string', fallback => 1;
 
-has year    => (is => 'rw', predicate => 1);
-has month   => (is => 'rw', predicate => 1);
-has date    => (is => 'ro', default   => sub { Date::Bahai::Simple->new });
-has _plugin => (is => 'rw', default   => sub { 0 });
+has year  => (is => 'rw', predicate => 1);
+has month => (is => 'rw', predicate => 1);
+has date  => (is => 'ro', default   => sub { Date::Bahai::Simple->new });
 
 sub BUILD {
     my ($self) = @_;
@@ -39,13 +36,6 @@ sub BUILD {
     unless ($self->has_year && $self->has_month) {
         $self->year($self->date->get_year);
         $self->month($self->date->month);
-    }
-
-    my $plugins = [ Calendar::Bahai::plugins ];
-    foreach (@{$plugins}) {
-        next unless ($_ eq 'Calendar::Plugin::Renderer');
-        Role::Tiny->apply_roles_to_object($self, $_);
-        $self->_plugin(1);
     }
 }
 
@@ -90,8 +80,7 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
     # prints bahai month calendar in which the given julian date falls in.
     print Calendar::Bahai->new->from_julian(2457102.5), "\n";
 
-    # prints current month bahai calendar in SVG format if the plugin
-    # Calendar::Plugin::Renderer v0.06 or above is installed.
+    # prints current month bahai calendar in SVG format.
     print Calendar::Bahai->new->as_svg;
 
 =head1 BAHAI MONTHS
@@ -198,7 +187,7 @@ Returns current month of the Bahai calendar.
 sub current {
     my ($self) = @_;
 
-    return $self->date->get_calendar;
+    return $self->as_text($self->date->month, $self->date->year);
 }
 
 =head2 from_gregorian($year, $month, $day)
@@ -223,15 +212,12 @@ sub from_julian {
     my ($self, $julian_date) = @_;
 
     my $date = $self->date->from_julian($julian_date);
-    return $date->get_calendar;
+    return $self->as_text($date->month, $date->year);
 }
 
 =head2 as_svg($month, $year)
 
-Returns calendar for the given C<$month> and C<$year> rendered  in SVG format. If
-C<$month> and C<$year> missing, it would return current calendar month.The Plugin
-L<Calendar::Plugin::Renderer> v0.06 or above must be installed for this to work.
-
+Returns  calendar  for  the given C<$month> and C<$year> rendered  in SVG format.
 C<$month> can be a number between 1 and 19 or a valid Bahai month name.
 
 =cut
@@ -239,22 +225,7 @@ C<$month> can be a number between 1 and 19 or a valid Bahai month name.
 sub as_svg {
     my ($self, $month, $year) = @_;
 
-    die "ERROR: Plugin Calendar::Plugin::Renderer v0.06 or above is missing,".
-        "please install it first.\n" unless ($self->_plugin);
-
-    if (defined $month && defined $year) {
-        $self->date->validate_month($month);
-        $self->date->validate_year($year);
-
-        if ($month =~ /^[A-Z]+$/i) {
-            $month = $self->date->get_month_number($month);
-        }
-    }
-    else {
-        $month = $self->month;
-        $year  = $self->year;
-    }
-
+    ($month, $year) = $self->validate_params($month, $year);
     my ($major, $cycle, $y) = $self->date->get_major_cycle_year($year - 1);
     my $date = Date::Bahai::Simple->new({
         major => $major,
@@ -263,18 +234,71 @@ sub as_svg {
         month => $month,
         day   => 1 });
 
-    return $self->svg_calendar({
-        adjust_height => 21,
-        start_index   => $date->day_of_week + 1,
-        month_name    => $date->get_month_name,
-        days          => 19,
-        year          => $year });
+    return $self->svg_calendar(
+        {
+            adjust_height => 21,
+            start_index   => $date->day_of_week,
+            month_name    => $date->get_month_name,
+            days          => 19,
+            year          => $year
+        });
+}
+
+=head2 as_text($month, $year)
+
+Returns color coded Bahai calendar for the given C<$month> and C<$year>.
+
+=cut
+
+sub as_text {
+    my ($self, $month, $year) = @_;
+
+    ($month, $year) = $self->validate_params($month, $year);
+    my ($major, $cycle, $y) = $self->get_major_cycle_year($year - 1);
+    my $date = Date::Bahai::Simple->new({
+        major => $major,
+        cycle => $cycle,
+        year  => $y,
+        month => $month,
+        day   => 1 });
+
+    return $self->text_calendar(
+        {
+            start_index => $date->day_of_week,
+            month_name  => $self->get_month_name($month),
+            days        => 19,
+            day_names   => $self->days,
+            year        => $year
+        });
 }
 
 sub as_string {
     my ($self) = @_;
 
-    return $self->date->get_calendar($self->month, $self->year);
+    return $self->as_text($self->month, $self->year);
+}
+
+#
+#
+# PRIVATE METHODS
+
+sub validate_params {
+    my ($self, $month, $year) = @_;
+
+    if (defined $month && defined $year) {
+        $self->date->validate_month($month);
+        $self->date->validate_year($year);
+
+        if ($month !~ /^\d+$/) {
+            $month = $self->date->get_month_number($month);
+        }
+    }
+    else {
+        $month = $self->month;
+        $year  = $self->year;
+    }
+
+    return ($month, $year);
 }
 
 =head1 AUTHOR

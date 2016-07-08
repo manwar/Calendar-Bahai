@@ -1,5 +1,11 @@
 Revision history for Calendar::Bahai
 
+0.35  Fri Jul 08 15:00:00 2016
+      - Added method as_text().
+      - Updated method as_svg() with regard to start index.
+      - Added dependency on Calendar::Plugin::Renderer v0.07.
+      - Added test for method svg_calendar().
+
 0.34  Fri May 13 11:40:00 2016
       - Updated dependency on Date::Bahai::Simple v0.13.
       - Tidied up method current() and method from_gregorian().
