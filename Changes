@@ -1,5 +1,8 @@
 Revision history for Calendar::Bahai
 
+0.36  Wed Aug 10 11:30:00 2016
+      - Updated dependency on Date::Bahai::Simple v0.15.
+
 0.35  Fri Jul 08 15:00:00 2016
       - Added method as_text().
       - Updated method as_svg() with regard to start index.

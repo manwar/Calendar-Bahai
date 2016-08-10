@@ -23,7 +23,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Moo'                        => '2.000000',
         'namespace::clean'           => '0.24',
-        'Date::Bahai::Simple'        => '0.13',
+        'Date::Bahai::Simple'        => '0.15',
         'Calendar::Plugin::Renderer' => '0.07',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
