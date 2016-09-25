@@ -1,5 +1,8 @@
 Revision history for Calendar::Bahai
 
+0.37  Sun Sep 25 19:40:00 2016
+      - Added key 'provides' to the Makefile.PL script.
+
 0.36  Wed Aug 10 11:30:00 2016
       - Updated dependency on Date::Bahai::Simple v0.15.
 
