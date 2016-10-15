@@ -1,5 +1,8 @@
 Revision history for Calendar::Bahai
 
+0.35  Sat Oct 15 09:10:00 2016
+      - Added dependency on Calendar::Plugin::Renderer v0.11.
+
 0.37  Sun Sep 25 19:40:00 2016
       - Added key 'provides' to the Makefile.PL script.
 

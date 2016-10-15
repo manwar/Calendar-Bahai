@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION   = '0.37';
+$Calendar::Bahai::VERSION   = '0.38';
 $Calendar::Bahai::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.37
+Version 0.38
 
 =cut
 
@@ -61,6 +61,9 @@ Bahai Era was Istijlal (Majesty), 1 Baha (Splendour) 1 BE.
    +----------+----------+----------+----------+----------+----------+----------+
    |       16 |       17 |       18 |       19 |                                |
    +----------+----------+----------+----------+----------+----------+----------+
+
+The package L<App::calendr> provides command line tool  C<calendr> to display the
+supported calendars on the terminal.
 
 =head1 SYNOPSIS
 

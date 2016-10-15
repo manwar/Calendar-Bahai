@@ -24,14 +24,14 @@ WriteMakefile(
         'Moo'                        => '2.000000',
         'namespace::clean'           => '0.24',
         'Date::Bahai::Simple'        => '0.15',
-        'Calendar::Plugin::Renderer' => '0.07',
+        'Calendar::Plugin::Renderer' => '0.11',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Calendar-Bahai-*' },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
         provides    => {
-            'Calendar::Bahai' => { file => 'lib/Calendar/Bahai.pm', version => '0.37' },
+            'Calendar::Bahai' => { file => 'lib/Calendar/Bahai.pm', version => '0.38' },
         },
         resources => {
             repository => {
