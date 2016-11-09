@@ -23,7 +23,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Moo'                        => '2.000000',
         'namespace::clean'           => '0.24',
-        'Date::Bahai::Simple'        => '0.15',
+        'Date::Bahai::Simple'        => '0.16',
         'Calendar::Plugin::Renderer' => '0.11',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
@@ -31,7 +31,7 @@ WriteMakefile(
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
         provides    => {
-            'Calendar::Bahai' => { file => 'lib/Calendar/Bahai.pm', version => '0.38' },
+            'Calendar::Bahai' => { file => 'lib/Calendar/Bahai.pm', version => '0.39' },
         },
         resources => {
             repository => {
