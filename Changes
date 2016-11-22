@@ -1,5 +1,8 @@
 Revision history for Calendar::Bahai
 
+0.40  Tue Nov 22 10:35:00 2016
+      - Fixed the bug in the method as_text().
+
 0.39  Wed Nov 09 09:55:00 2016
       - Updated dependency on Date::Bahai::Simple v0.16.
 

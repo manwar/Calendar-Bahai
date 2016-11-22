@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION   = '0.39';
+$Calendar::Bahai::VERSION   = '0.40';
 $Calendar::Bahai::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.39
+Version 0.40
 
 =cut
 
@@ -257,7 +257,7 @@ sub as_text {
     my ($self, $month, $year) = @_;
 
     ($month, $year) = $self->validate_params($month, $year);
-    my ($major, $cycle, $y) = $self->get_major_cycle_year($year - 1);
+    my ($major, $cycle, $y) = $self->date->get_major_cycle_year($year - 1);
     my $date = Date::Bahai::Simple->new({
         major => $major,
         cycle => $cycle,
@@ -268,9 +268,9 @@ sub as_text {
     return $self->text_calendar(
         {
             start_index => $date->day_of_week,
-            month_name  => $self->get_month_name($month),
+            month_name  => $date->get_month_name($month),
             days        => 19,
-            day_names   => $self->days,
+            day_names   => $date->days,
             year        => $year
         });
 }
