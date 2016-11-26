@@ -1,5 +1,9 @@
 Revision history for Calendar::Bahai
 
+0.41  Sat Nov 26 16:55:00 2016
+      - Updated dependency on Date::Bahai::Simple v0.18.
+      - Tidied up method as_text() and as_svg().
+
 0.40  Tue Nov 22 10:35:00 2016
       - Fixed the bug in the method as_text().
 
