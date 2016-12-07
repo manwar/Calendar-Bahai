@@ -11,3 +11,5 @@ t/manifest.t
 t/pod.t
 t/bahai.xml
 t/fake-bahai.xml
+t/meta-json.t
+t/meta-yml.t

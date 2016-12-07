@@ -1,5 +1,8 @@
 Revision history for Calendar::Bahai
 
+0.42  Wed Dec 07 22:50:00 2016
+      - Added test scripts (t/meta-json.t and t/meta-yml.t)
+
 0.41  Sat Nov 26 16:55:00 2016
       - Updated dependency on Date::Bahai::Simple v0.18.
       - Tidied up method as_text() and as_svg().
