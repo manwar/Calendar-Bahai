@@ -1,6 +1,6 @@
 package Calendar::Bahai;
 
-$Calendar::Bahai::VERSION   = '0.43';
+$Calendar::Bahai::VERSION   = '0.44';
 $Calendar::Bahai::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Bahai - Interface to the calendar used by Bahai faith.
 
 =head1 VERSION
 
-Version 0.43
+Version 0.44
 
 =cut
 
@@ -85,6 +85,9 @@ supported calendars on the terminal.
 
     # prints current month bahai calendar in SVG format.
     print Calendar::Bahai->new->as_svg;
+
+    # prints current month bahai calendar in text format.
+    print Calendar::Bahai->new->as_text;
 
 =head1 BAHAI MONTHS
 
@@ -221,7 +224,8 @@ sub from_julian {
 =head2 as_svg($month, $year)
 
 Returns  calendar  for  the given C<$month> and C<$year> rendered  in SVG format.
-C<$month> can be a number between 1 and 19 or a valid Bahai month name.
+C<$month>  can  be  a  number  between  1 and  19 or a valid Bahai month name. If
+C<$month> and C<$year> missing, it would return current calendar month.
 
 =cut
 
@@ -243,7 +247,9 @@ sub as_svg {
 
 =head2 as_text($month, $year)
 
-Returns color coded Bahai calendar for the given C<$month> and C<$year>.
+Returns color coded Bahai calendar for the given C<$month> and C<$year>. C<$month>
+can  be  a  number between 1 and 19 or a valid Bahai month name. If C<$month> and
+C<$year> missing, it would return current calendar month.
 
 =cut
 

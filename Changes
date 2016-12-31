@@ -1,5 +1,10 @@
 Revision history for Calendar::Bahai
 
+0.44  Sat Dec 31 20:00:00 2016
+      - Added sample code for method as_text() in the SYNOPSIS section.
+      - Updated pod document for method as_svg().
+      - Updated pod document for method as_text().
+
 0.43  Sat Dec 17 00:35:00 2016
       - Updated dependency on Date::Bahai::Simple v0.19.
 
