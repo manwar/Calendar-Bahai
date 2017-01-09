@@ -1,5 +1,9 @@
 Revision history for Calendar::Bahai
 
+0.45  Mon Jan 09 12:20:00 2017
+      - Added dependency on Calendar::Plugin::Renderer v0.12.
+      - Removed method validate_params(), no longer required.
+
 0.44  Sat Dec 31 20:00:00 2016
       - Added sample code for method as_text() in the SYNOPSIS section.
       - Updated pod document for method as_svg().
