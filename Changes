@@ -1,5 +1,8 @@
 Revision history for Calendar::Bahai
 
+0.46  Thu Jan 26 11:55:00 2017
+      - Upgraded to use Date::Bahai::Simple v0.20.
+
 0.45  Mon Jan 09 12:20:00 2017
       - Added dependency on Calendar::Plugin::Renderer v0.12.
       - Removed method validate_params(), no longer required.
